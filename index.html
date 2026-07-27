@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Reedr Creator Desk</title>
+<meta name="description" content="Turns LightReel research into emails sent, videos posted and readers counted.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ============================================================================
+     CONFIG. Everything you would want to change lives in this one block.
+     Nothing below it needs editing.
+     ============================================================================ -->
+<script>
+window.DESK_CONFIG = {
+
+  /* 1. WHO IS WRITING. Used in every email and in the ref links. */
+  brand: {
+    product:  "Reedr",
+    site:     "reedr.co",
+    siteUrl:  "https://reedr.co",
+    sender:   "Melusi",
+    signoff:  "Melusi\nReedr\nreedr.co"
+  },
+
+  /* 2. THE REF LINK. One per creator, so you can tell whose audience showed up.
+        PostHog on reedr.co already records the full URL of every landing, so
+        traffic per creator is visible today with no change to the app. Signups
+        per creator still need a line of code in Reedr, so log those by hand
+        for now. */
+  refBase: "https://reedr.co/?ref=",
+
+  /* 3. THE OFFER. One sentence. Keep it honest, it goes out under your name. */
+  offer: "Reedr Plus is yours free for life either way. If you take paid work, tell me your rate.",
+
+  /* 4. TIMING. Days between an action and the next thing it puts on your desk. */
+  chaseAfterDays:   5,   // emailed, no reply
+  postCheckDays:    7,   // brief sent, has it gone up
+  resultWindowDays: 7,   // posted, time to read the numbers
+  snoozeDays:       3,
+
+  /* 5. WHEN TO RUN A CREATOR AGAIN. Signups from one video. */
+  renewIfSignups: 5,
+
+  /* 6. HOW YOU SEND. "gmail" opens a Gmail compose tab, "mailto" opens your
+        mail app. Both buttons are always available, this sets the default. */
+  mailClient: "gmail",
+
+  /* 7. LANES. A lane is a kind of creator, its email and its brief.
+        `match` words are checked against the creator's niche and their video
+        captions. First lane to match wins, so keep the specific ones first. */
+  lanes: [
+    {
+      id: "journal",
+      label: "Reading journal",
+      match: ["journal", "spread", "planner", "bullet", "stationery", "scrapbook"],
+      subject: "Your reading journal, and the app I built for people who keep one",
+      body:
+`Hi {first},
+
+Your reading journal spreads are why I am writing. {ONE LINE ABOUT THEIR LATEST VIDEO}
+
+I built Reedr, a reading tracker for people who already track by hand. Quarter star ratings instead of blunt fives, saved quotes set properly on the page, shelves you would actually want to look at, and your reading data stays yours. No Amazon, no ads, nothing deciding what you read next.
+
+I am not asking you to put the journal down. The video I would love is the one where the paper and the app sit side by side, and you say plainly which parts you would keep on each.
+
+{OFFER}
+
+{REF}
+
+{SIGNOFF}`,
+      brief:
+`LANE: reading journal
+
+The insight
+Your audience already does the work by hand. They are not looking to be told journalling is inefficient. Reedr is the part of the journal that is annoying to keep by hand: the running stats, the ratings, the quote you want to find again in eight months.
+
+Show these three moments
+1. A spread on the desk, then the same books on the Reedr shelf.
+2. Rating a book in quarter stars, and saying why 3.75 is a different book from 4.
+3. Saving a quote, then the typeset quote card that comes out of it.
+
+Say in your own words
+- What you would keep on paper and what you would move.
+- That the data belongs to the reader and exports whenever they want.
+
+Do not say
+- That Reedr replaces a journal.
+- That Reedr is free. The app is free to use, Plus is a paid tier.
+- Any user or download numbers. There are none worth quoting yet.`
+    },
+    {
+      id: "tracker",
+      label: "Trackers and apps",
+      match: ["tracker", "tracking", "app", "storygraph", "goodreads", "fable", "kobo", "kindle", "e-reader", "ereader", "sync"],
+      subject: "An independent alternative to Goodreads, built by one person",
+      body:
+`Hi {first},
+
+You already explain reading trackers to people, which is most of the work.
+
+I built Reedr because the honest options are thin. Goodreads is Amazon and has not really moved in a decade. The alternatives are good and getting big. I wanted the one that stays independent, looks like something you would want open, and never sells the reading data back to anyone.
+
+Quarter star ratings, sub ratings, moods and tropes, a commonplace book for quotes, a photo of your shelf that imports the whole shelf, and a one click import from Goodreads or StoryGraph. {ONE LINE ABOUT THEIR LATEST VIDEO}
+
+I would rather you were honest about it on camera than positive about it. Your audience knows the category already, so you can get straight into the workflow.
+
+{OFFER}
+
+{REF}
+
+{SIGNOFF}`,
+      brief:
+`LANE: trackers and apps
+
+The insight
+Your audience does not need the category explained. Skip the setup and get to the comparison. The interesting question for them is what Reedr does that their current tracker does not.
+
+Show these three moments
+1. The import: a Goodreads or StoryGraph export going in and the shelf filling up.
+2. Quarter stars and the sub ratings, because no one else rates like this.
+3. The shelf photo scan: point a camera at a real shelf, books come back.
+
+Say in your own words
+- Where Reedr wins and where it does not. An honest gap is worth more than a clean sweep.
+- That it is independent and one person builds it.
+
+Do not say
+- That Fable exports directly. It does not, there is a workaround.
+- That Reedr has more books, more users, or a bigger community. It does not.
+- Anything about the roadmap. Only cover what is in the app today.`
+    },
+    {
+      id: "library",
+      label: "Shelves and libraries",
+      match: ["library", "shelf", "shelves", "bookshelf", "bookcase", "collection", "collect", "organi", "tour", "room"],
+      subject: "Your shelf, kept somewhere when you are not standing in front of it",
+      body:
+`Hi {first},
+
+I watch shelf tours like yours and the thing I keep noticing is that the collection is the point, not the reading list. {ONE LINE ABOUT THEIR LATEST VIDEO}
+
+I built Reedr so a collection has somewhere to live digitally without turning into a spreadsheet. You can photograph a whole shelf and it reads the spines and adds the books. The digital shelf is arranged like a shelf, not like a database. You can pin a featured book, the way you turn one face out at home.
+
+The video I would love is the shelf you already film, ending with the same shelf on the phone.
+
+{OFFER}
+
+{REF}
+
+{SIGNOFF}`,
+      brief:
+`LANE: shelves and libraries
+
+The insight
+This audience is emotionally invested in the physical object. Reedr is not a replacement for the shelf, it is a record of it, useful in a bookshop when you cannot remember if you own something.
+
+Show these three moments
+1. Point the camera at a real shelf, let the scan pull the titles in.
+2. The digital shelf next to the real one, same books, same order.
+3. Pinning a featured book.
+
+Say in your own words
+- The moment you bought a duplicate, if that has ever happened to you.
+- That you can organise by whatever you actually organise by.
+
+Do not say
+- That digital is better than physical. It will not land with your audience.
+- That the scan is perfect. It is good and it asks you to confirm before adding.
+- Any user numbers.`
+    },
+    {
+      id: "session",
+      label: "Readathons and sessions",
+      match: ["readathon", "vlog", "session", "challenge", "reading day", "sprint", "routine", "cozy", "morning", "café", "cafe"],
+      subject: "A way to make your readathons measurable",
+      body:
+`Hi {first},
+
+Your readathon and reading day videos are the reason I am writing. {ONE LINE ABOUT THEIR LATEST VIDEO}
+
+I built Reedr, a reading tracker. The part that fits you is the record: pages and minutes per session, audiobook time counted properly, streaks, and a year in review at the end that is built from what actually happened rather than a guess.
+
+The video I would love is a reading day where the tracker is running, and the numbers at the end are real.
+
+{OFFER}
+
+{REF}
+
+{SIGNOFF}`,
+      brief:
+`LANE: readathons and sessions
+
+The insight
+The format already has a scoreboard problem. People finish a reading day and estimate. Reedr turns the estimate into a number, which makes the payoff at the end of the video concrete.
+
+Show these three moments
+1. Starting the day, logging the first session.
+2. A progress update partway through, mid video, in one tap.
+3. The end of day total: pages, minutes, books finished.
+
+Say in your own words
+- Whether the real number matched what you thought it would be.
+- How the streak feels after a week.
+
+Do not say
+- That Reedr will make anyone read more. It records, it does not nag.
+- Any user numbers.`
+    },
+    {
+      id: "quotes",
+      label: "Quotes and annotation",
+      match: ["quote", "annotat", "commonplace", "passage", "highlight", "tabs", "margin"],
+      subject: "Somewhere to keep the passages you tab",
+      body:
+`Hi {first},
+
+You collect passages properly, which almost nobody does on camera. {ONE LINE ABOUT THEIR LATEST VIDEO}
+
+I built Reedr and the part I am proudest of is the commonplace book. You save a quote against the book and the page, and it comes back out as a typeset card you can post, in a serif that respects it rather than white text on a stock photo.
+
+The video I would love is you moving a handful of your tabbed passages in, and reading one out.
+
+{OFFER}
+
+{REF}
+
+{SIGNOFF}`,
+      brief:
+`LANE: quotes and annotation
+
+The insight
+This audience cares about how a passage looks when it is shared. Most quote graphics are ugly. That is the whole opening.
+
+Show these three moments
+1. A tabbed page in a physical book, then the quote saved against that book.
+2. The typeset quote card that comes out.
+3. Finding a quote again months later by searching the book.
+
+Say in your own words
+- Why you tab in the first place.
+- Read one passage out loud. That is the video.
+
+Do not say
+- That Reedr replaces annotating in the book itself.
+- Any user numbers.`
+    },
+    {
+      id: "recap",
+      label: "Recaps and reviews",
+      match: ["recap", "weekly", "wrap", "review", "reviews", "daily life", "lifestyle", "recs", "recommendation"],
+      subject: "The numbers behind your weekly reading recap",
+      body:
+`Hi {first},
+
+Your weekly reading recaps are the reason I am writing. {ONE LINE ABOUT THEIR LATEST VIDEO}
+
+I built Reedr, a reading tracker. What it would give you is the spine of the recap without you having to remember any of it: what you finished, what you abandoned and why, what you rated it, how the week compared to the last one.
+
+The video I would love is your normal recap, with the app supplying the facts.
+
+{OFFER}
+
+{REF}
+
+{SIGNOFF}`,
+      brief:
+`LANE: recaps and reviews
+
+The insight
+The recap format runs on recall, and recall is the boring part of making it. Reedr is the notes you did not have to keep.
+
+Show these three moments
+1. The week's finishes and ratings, pulled up at the start of the recap.
+2. A did not finish logged with an actual reason.
+3. This week against last week.
+
+Say in your own words
+- Whether the app changed what you noticed about your own reading.
+
+Do not say
+- Any user numbers.
+- That the stats are shared publicly by default. They are not.`
+    },
+    {
+      id: "general",
+      label: "General bookish",
+      match: [],
+      subject: "A reading app built by one person, and why I am writing to you",
+      body:
+`Hi {first},
+
+{ONE LINE ABOUT THEIR LATEST VIDEO}
+
+I built Reedr, an independent reading tracker. Shelves worth looking at, quarter star ratings, saved quotes set properly, imports from Goodreads and StoryGraph, and reading data that stays with the reader. No Amazon, no ads, no algorithm.
+
+I am looking for a handful of readers to show it honestly rather than sell it.
+
+{OFFER}
+
+{REF}
+
+{SIGNOFF}`,
+      brief:
+`LANE: general bookish
+
+The insight
+Lead with the reader, not the software. The app is the thing that makes the reading legible, it is not the subject of the video.
+
+Show these three moments
+1. Adding a book you are actually reading.
+2. One feature that surprised you.
+3. The shelf, full, at the end.
+
+Say in your own words
+- Why you would or would not switch.
+
+Do not say
+- Any user numbers.
+- That Reedr is free. The app is free to use, Plus is paid.`
+    }
+  ]
+};
+</script>
+
+<style>
+/* ========== TOKENS ==========
+   Reedr's Private Archive palette. Every component below uses these names and
+   nothing else, so a theme change is a token flip. */
+:root{
+  --paper:        #fdf9f4;
+  --paper-2:      #f6f2ec;
+  --paper-3:      #efeae2;
+  --card:         #ffffff;
+  --card-2:       #fbf8f3;
+
+  --ink:          #1c1c19;
+  --ink-2:        #4d463a;
+  --ink-3:        #857b6c;
+
+  --rule:         #e6ddcd;
+  --rule-2:       #d3c8b6;
+
+  --gold:         #745a27;
+  --gold-2:       #8f7239;
+  --gold-soft:    #c9a96e;
+  --gold-wash:    #f6ecd7;
+  --gold-deep:    #4a3508;
+  --on-gold:      #3d2b09;
+
+  --good:         #3f6b4a;
+  --good-wash:    #e7f0e8;
+  --warn:         #8a5a12;
+  --warn-wash:    #fbeed6;
+  --bad:          #a3231f;
+  --bad-wash:     #fbe0dd;
+
+  --shadow-1:     0 1px 2px rgba(61,43,29,.05);
+  --shadow-2:     0 2px 24px rgba(61,43,29,.07);
+  --shadow-3:     0 18px 60px rgba(61,43,29,.18);
+
+  --serif:  "Playfair Display", Georgia, serif;
+  --sans:   "Inter", system-ui, -apple-system, sans-serif;
+  --mono:   "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --out:    cubic-bezier(.23,1,.32,1);
+  --drawer: cubic-bezier(.32,.72,0,1);
+
+  --r-sm: 6px;
+  --r:    10px;
+  --r-lg: 16px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:#141310; --paper-2:#1b1916; --paper-3:#232019;
+    --card:#1e1b17;  --card-2:#241f19;
+    --ink:#f2ece2;   --ink-2:#c4bbab;  --ink-3:#8f8778;
+    --rule:#332d24;  --rule-2:#453d31;
+    --gold:#e4c285;  --gold-2:#d8b26c; --gold-soft:#8a6c33;
+    --gold-wash:#2b2318; --gold-deep:#f3ddb2; --on-gold:#241a08;
+    --good:#8fc79c;  --good-wash:#1d2a20;
+    --warn:#e0b56b;  --warn-wash:#2c2315;
+    --bad:#f0a49c;   --bad-wash:#31201e;
+    --shadow-1:0 1px 2px rgba(0,0,0,.4);
+    --shadow-2:0 2px 24px rgba(0,0,0,.35);
+    --shadow-3:0 18px 60px rgba(0,0,0,.55);
+  }
+}
+
+/* ========== RESET ========== */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+a{color:var(--gold);text-decoration-thickness:1px;text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:3px}
+h1,h2,h3,p{margin:0}
+table{border-collapse:collapse;width:100%}
+
+/* ========== SHELL ========== */
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header.top{
+  position:sticky;top:0;z-index:40;
+  background:var(--paper);
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:saturate(1.4) blur(12px);
+  border-bottom:1px solid var(--rule);
+}
+.top-in{display:flex;align-items:baseline;gap:14px;padding:16px 0 12px}
+.logo{font-family:var(--serif);font-weight:600;font-size:22px;letter-spacing:-.01em}
+.logo em{font-style:italic;color:var(--gold)}
+.top-sub{font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:9px 14px;border-radius:var(--r-sm) var(--r-sm) 0 0;
+  font-size:13.5px;font-weight:500;color:var(--ink-3);white-space:nowrap;
+  border-bottom:2px solid transparent;transition:color .16s var(--out),border-color .16s var(--out)
+}
+.tab:hover{color:var(--ink-2)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gold)}
+.tab .count{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-left:5px}
+.tab[aria-selected="true"] .count{color:var(--gold)}
+
+main{padding:26px 0 96px}
+section[hidden]{display:none}
+.section-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.section-head h2{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:-.015em}
+.section-head p{color:var(--ink-3);font-size:13.5px}
+
+/* ========== BUTTONS ========== */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:8px 14px;border-radius:var(--r-sm);font-size:13.5px;font-weight:500;
+  border:1px solid var(--rule-2);background:var(--card);color:var(--ink);
+  transition:background .14s var(--out),border-color .14s var(--out),transform .1s var(--out);
+}
+.btn:hover{background:var(--paper-3);border-color:var(--ink-3)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--gold);border-color:var(--gold);color:var(--paper)}
+@media (prefers-color-scheme: dark){ .btn-primary{color:#17140f} }
+.btn-primary:hover{background:var(--gold-2);border-color:var(--gold-2)}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--ink-3)}
+.btn-ghost:hover{background:var(--paper-3);color:var(--ink)}
+.btn-sm{padding:5px 10px;font-size:12.5px}
+.btn-danger:hover{background:var(--bad-wash);border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ========== TAGS ========== */
+.tag{
+  display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  text-transform:uppercase;padding:3px 7px;border-radius:3px;
+  border:1px solid var(--rule-2);color:var(--ink-3);white-space:nowrap
+}
+.tag-lane{border-color:var(--gold-soft);color:var(--gold);background:var(--gold-wash)}
+.tag-good{border-color:var(--good);color:var(--good);background:var(--good-wash)}
+.tag-warn{border-color:var(--warn);color:var(--warn);background:var(--warn-wash)}
+.tag-bad{border-color:var(--bad);color:var(--bad);background:var(--bad-wash)}
+
+/* ========== TODAY ========== */
+.today-list{display:flex;flex-direction:column;gap:12px}
+.card-due{
+  background:var(--card);border:1px solid var(--rule);border-radius:var(--r);
+  box-shadow:var(--shadow-1);overflow:hidden;
+  animation:rise .32s var(--out) both;
+}
+.card-due.overdue{border-left:3px solid var(--warn)}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.due-top{display:flex;align-items:flex-start;gap:12px;padding:15px 16px 0}
+.due-top > div:first-child{flex:1}
+.due-handle{font-family:var(--mono);font-size:14px;font-weight:500}
+.due-handle button{font:inherit;color:var(--ink);text-align:left}
+.due-handle button:hover{color:var(--gold);text-decoration:underline}
+.due-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px}
+.due-num{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.due-why{padding:10px 16px 0;color:var(--ink-2);font-size:13.5px;max-width:70ch}
+.due-step{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin:14px 0 0;padding:12px 16px;background:var(--card-2);border-top:1px solid var(--rule)
+}
+.due-step .label{font-size:13.5px;font-weight:500;margin-right:auto}
+.due-step .when{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+.due-step .when.late{color:var(--warn)}
+
+/* ========== CREATORS TABLE ========== */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.field{
+  padding:8px 11px;border:1px solid var(--rule-2);border-radius:var(--r-sm);
+  background:var(--card);min-width:0
+}
+.field:focus{outline:2px solid var(--gold);outline-offset:-1px;border-color:var(--gold)}
+input.field::placeholder{color:var(--ink-3)}
+.tbl-wrap{border:1px solid var(--rule);border-radius:var(--r);background:var(--card);overflow-x:auto;box-shadow:var(--shadow-1)}
+.tbl{min-width:720px}
+.tbl th{
+  text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);font-weight:400;
+  padding:11px 14px;border-bottom:1px solid var(--rule);white-space:nowrap
+}
+.tbl th.num,.tbl td.num{text-align:right}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--rule);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr{cursor:pointer;transition:background .12s var(--out)}
+.tbl tbody tr:hover{background:var(--paper-2)}
+.tbl .h{font-family:var(--mono);font-size:13px;font-weight:500}
+.tbl .n{font-family:var(--mono);font-size:12.5px;color:var(--ink-2)}
+.tbl .sub{font-size:12px;color:var(--ink-3);margin-top:2px}
+
+/* stage pips */
+.pips{display:inline-flex;gap:3px;align-items:center}
+.pip{width:7px;height:7px;border-radius:50%;background:var(--rule-2)}
+.pip.on{background:var(--gold)}
+.pip.closed{background:var(--ink-3)}
+
+/* ========== RESULTS LEDGER ========== */
+.ledger{border:1px solid var(--rule);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow-1);overflow:hidden}
+.ledger-row{display:grid;grid-template-columns:190px 1fr 74px 92px;gap:14px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--rule)}
+.ledger-row:last-child{border-bottom:0}
+.ledger-row .who{min-width:0}
+.ledger-row .who .h{font-family:var(--mono);font-size:13px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ledger-row .who .d{font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.bar-track{position:relative;height:22px;background:var(--paper-3);border-radius:3px;overflow:hidden}
+.bar-fill{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--gold-soft),var(--gold));border-radius:3px;transition:width .5s var(--out)}
+.bar-label{position:absolute;left:8px;top:0;height:22px;display:flex;align-items:center;font-family:var(--mono);font-size:11px;color:var(--on-gold)}
+.ledger-row .sg{font-family:var(--mono);font-size:16px;text-align:right}
+.ledger-row .sg small{font-size:10px;color:var(--ink-3);display:block;letter-spacing:.05em;text-transform:uppercase}
+.ledger-head{display:grid;grid-template-columns:190px 1fr 74px 92px;gap:14px;padding:10px 16px;border-bottom:1px solid var(--rule);background:var(--card-2);font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.ledger-head .r{text-align:right}
+.totals{display:flex;gap:26px;flex-wrap:wrap;padding:16px;background:var(--card-2);border-top:1px solid var(--rule)}
+.totals div span{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)}
+.totals div strong{font-family:var(--mono);font-size:20px;font-weight:500}
+
+/* ========== IMPORT ========== */
+.import-grid{display:grid;grid-template-columns:1fr 300px;gap:22px;align-items:start}
+@media (max-width:820px){.import-grid{grid-template-columns:1fr}}
+textarea.paste{
+  width:100%;min-height:260px;padding:14px;border:1px solid var(--rule-2);
+  border-radius:var(--r);background:var(--card);font-family:var(--mono);
+  font-size:12.5px;line-height:1.6;resize:vertical
+}
+textarea.paste:focus{outline:2px solid var(--gold);outline-offset:-1px;border-color:var(--gold)}
+.hint{background:var(--card-2);border:1px solid var(--rule);border-radius:var(--r);padding:16px}
+.hint h3{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:8px}
+.hint p{font-size:13px;color:var(--ink-2);margin-bottom:9px}
+.hint code{font-family:var(--mono);font-size:11.5px;background:var(--paper-3);padding:1px 5px;border-radius:3px}
+.preview{margin-top:16px;border:1px solid var(--rule);border-radius:var(--r);overflow:hidden;background:var(--card)}
+.preview-head{padding:12px 15px;background:var(--card-2);border-bottom:1px solid var(--rule);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.preview-head strong{font-family:var(--serif);font-size:16px;font-weight:600}
+.preview-list{max-height:300px;overflow-y:auto}
+.preview-item{display:flex;gap:10px;align-items:baseline;padding:9px 15px;border-bottom:1px solid var(--rule);font-size:13px}
+.preview-item:last-child{border-bottom:0}
+.preview-item .h{font-family:var(--mono);font-size:12.5px;min-width:150px}
+.preview-item .w{color:var(--ink-3);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ========== PANEL ========== */
+.scrim{position:fixed;inset:0;background:rgba(28,24,18,.42);z-index:60;opacity:0;pointer-events:none;transition:opacity .26s var(--out)}
+.scrim.open{opacity:1;pointer-events:auto}
+.panel{
+  position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);z-index:70;
+  background:var(--paper);border-left:1px solid var(--rule);box-shadow:var(--shadow-3);
+  transform:translateX(100%);transition:transform .34s var(--drawer);
+  display:flex;flex-direction:column;overflow:hidden
+}
+.panel.open{transform:none}
+.panel-head{padding:18px 20px 14px;border-bottom:1px solid var(--rule);background:var(--card)}
+.panel-body{flex:1;overflow-y:auto;padding:18px 20px 40px}
+.panel-foot{padding:12px 20px;border-top:1px solid var(--rule);background:var(--card);display:flex;gap:8px;flex-wrap:wrap}
+.panel h3{font-family:var(--mono);font-size:16px;font-weight:500}
+.panel .who-name{font-family:var(--serif);font-size:15px;color:var(--ink-2);margin-top:2px}
+.blk{margin-bottom:22px}
+.blk > h4{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:400;margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--rule)
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lbl{display:block;font-size:11.5px;color:var(--ink-3);margin-bottom:3px}
+.grid2 .field,.blk > .field{width:100%}
+.quote{
+  border-left:2px solid var(--gold-soft);padding:2px 0 2px 12px;
+  color:var(--ink-2);font-size:13.5px
+}
+.ref-row{display:flex;gap:8px;align-items:center}
+.ref-row input{flex:1;font-family:var(--mono);font-size:12px}
+.act-list{display:flex;flex-direction:column;gap:0}
+.act{display:flex;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13px}
+.act:last-child{border-bottom:0}
+.act .when{font-family:var(--mono);font-size:11px;color:var(--ink-3);min-width:76px;flex-shrink:0}
+.vid{display:block;padding:9px 0;border-bottom:1px dotted var(--rule);font-size:13px}
+.vid:last-child{border-bottom:0}
+.vid .top{display:flex;gap:8px;align-items:baseline}
+.vid .cap{color:var(--ink-3);font-size:12px;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.post-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:10px 0;border-bottom:1px dotted var(--rule)}
+.brief-box{
+  background:var(--card);border:1px solid var(--rule);border-radius:var(--r);
+  padding:14px;font-size:12.5px;line-height:1.65;white-space:pre-wrap;
+  max-height:220px;overflow-y:auto;font-family:var(--sans);color:var(--ink-2)
+}
+
+/* ========== EMPTY / TOAST ========== */
+.empty{
+  border:1px dashed var(--rule-2);border-radius:var(--r-lg);padding:48px 28px;text-align:center;background:var(--card-2)
+}
+.empty h3{font-family:var(--serif);font-size:22px;font-weight:600;margin-bottom:8px}
+.empty p{color:var(--ink-3);max-width:46ch;margin:0 auto 18px}
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);z-index:90;
+  background:var(--ink);color:var(--paper);padding:11px 16px;border-radius:var(--r-sm);
+  font-size:13.5px;box-shadow:var(--shadow-3);opacity:0;pointer-events:none;
+  transition:opacity .2s var(--out),transform .26s var(--out);display:flex;gap:14px;align-items:center
+}
+@media (prefers-color-scheme: dark){#toast{background:var(--card);border:1px solid var(--rule-2);color:var(--ink)}}
+#toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast button{color:var(--gold-soft);font-weight:500;font-size:13px}
+@media (prefers-color-scheme: dark){#toast button{color:var(--gold)}}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width:640px){
+  .wrap{padding:0 14px}
+  .top-in{padding:13px 0 10px;gap:10px}
+  .logo{font-size:19px;white-space:nowrap}
+  #storeStatus{display:none}
+  .section-head{flex-direction:column;gap:2px;align-items:flex-start}
+  .section-head h2{font-size:22px}
+  .ledger-row,.ledger-head{grid-template-columns:1fr 62px 78px;gap:10px}
+  .ledger-row .bar-track{grid-column:1/-1;order:3}
+  .ledger-head .bar-h{display:none}
+  .panel{width:100vw;top:auto;height:92vh;border-radius:var(--r-lg) var(--r-lg) 0 0;border-left:0;border-top:1px solid var(--rule);transform:translateY(100%)}
+  .panel.open{transform:none}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-in">
+      <div>
+        <div class="logo">Reedr <em>Creator Desk</em></div>
+      </div>
+      <div class="top-sub" id="storeStatus">Saved on this computer</div>
+      <div class="top-right">
+        <button class="btn btn-sm btn-ghost" id="btnBackup">Back up</button>
+        <button class="btn btn-sm btn-ghost" id="btnRestore">Restore</button>
+        <input type="file" id="fileRestore" accept="application/json" hidden>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-view="today" aria-selected="true">Today <span class="count" id="cTodayN"></span></button>
+      <button class="tab" role="tab" data-view="creators" aria-selected="false">Creators <span class="count" id="cCreatorsN"></span></button>
+      <button class="tab" role="tab" data-view="results" aria-selected="false">Results <span class="count" id="cResultsN"></span></button>
+      <button class="tab" role="tab" data-view="import" aria-selected="false">Import</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- TODAY -->
+  <section id="view-today">
+    <div class="section-head">
+      <h2>Today</h2>
+      <p id="todaySub"></p>
+    </div>
+    <div id="todayBody"></div>
+  </section>
+
+  <!-- CREATORS -->
+  <section id="view-creators" hidden>
+    <div class="section-head">
+      <h2>Creators</h2>
+      <p id="creatorsSub"></p>
+    </div>
+    <div class="filters">
+      <input class="field" id="fSearch" type="search" placeholder="Search handle, name, niche" style="flex:1;min-width:180px">
+      <select class="field" id="fLane"><option value="">All lanes</option></select>
+      <select class="field" id="fStage"><option value="">All stages</option></select>
+      <select class="field" id="fSort">
+        <option value="priority">Sort: priority</option>
+        <option value="followers">Sort: followers</option>
+        <option value="engagement">Sort: engagement</option>
+        <option value="due">Sort: next step</option>
+        <option value="added">Sort: recently added</option>
+      </select>
+      <button class="btn btn-sm" id="btnAdd">Add one</button>
+      <button class="btn btn-sm btn-ghost" id="btnExport">Export CSV</button>
+    </div>
+    <div id="creatorsBody"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="view-results" hidden>
+    <div class="section-head">
+      <h2>Results</h2>
+      <p id="resultsSub"></p>
+    </div>
+    <div id="resultsBody"></div>
+  </section>
+
+  <!-- IMPORT -->
+  <section id="view-import" hidden>
+    <div class="section-head">
+      <h2>Import</h2>
+      <p>Paste anything LightReel gives you. Tables, CSV exports, either one.</p>
+    </div>
+    <div class="import-grid">
+      <div>
+        <textarea class="paste" id="pasteBox" spellcheck="false" placeholder="Paste a creator table or a video CSV here, then press Read this."></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn btn-primary" id="btnParse">Read this</button>
+          <button class="btn btn-ghost" id="btnClearPaste">Clear</button>
+          <input type="file" id="fileCsv" accept=".csv,.tsv,.txt" hidden>
+          <button class="btn" id="btnFile">Choose a CSV file</button>
+        </div>
+        <div id="previewBody"></div>
+      </div>
+      <aside class="hint">
+        <h3>What it reads</h3>
+        <p><strong>Creator tables.</strong> Copy the table straight out of LightReel. It looks for a handle, an email, followers, engagement, niche and the reason they fit.</p>
+        <p><strong>Video exports.</strong> A CSV with <code>Video Link</code> attaches each video to its creator, and creates the creator if they are new to you.</p>
+        <p>Headers are matched loosely, and if there are none it works out each column from what is in it. Nothing is written until you confirm.</p>
+        <p>Someone already on your desk is topped up, never overwritten. Your stage, notes and history survive a re-import.</p>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" aria-hidden="true" aria-label="Creator detail"></aside>
+<div id="toast"><span id="toastMsg"></span><button id="toastAction" hidden></button></div>
+
+<script>
+"use strict";
+const CFG = window.DESK_CONFIG;
+const KEY = "reedr-creator-desk-v1";
+
+/* ============================ STAGES ============================ */
+const STAGES = {
+  shortlist: { label:"Shortlist",    next:{ label:"Send the first email",   days:0 } },
+  emailed:   { label:"Emailed",      next:{ label:"Chase, no reply yet",    days:CFG.chaseAfterDays } },
+  replied:   { label:"Replied",      next:{ label:"Send the brief",         days:0 } },
+  briefed:   { label:"Briefed",      next:{ label:"Check if it went up",    days:CFG.postCheckDays } },
+  posted:    { label:"Posted",       next:{ label:"Read the numbers",       days:CFG.resultWindowDays } },
+  measured:  { label:"Measured",     next:{ label:"Run again, or stop",     days:0 } },
+  renew:     { label:"Running again",next:{ label:"Send the repeat brief",  days:1 } },
+  paused:    { label:"Paused",       next:null },
+  passed:    { label:"Passed",       next:null }
+};
+const FLOW = ["shortlist","emailed","replied","briefed","posted","measured"];
+const CLOSED = ["paused","passed"];
+
+/* ============================ HELPERS ============================ */
+const $  = (s,r)=> (r||document).querySelector(s);
+const $$ = (s,r)=> Array.from((r||document).querySelectorAll(s));
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function today(){ const d=new Date(); return iso(d); }
+function iso(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function addDays(n, from){ const d = from? new Date(from+"T12:00:00") : new Date(); d.setDate(d.getDate()+n); return iso(d); }
+function daysBetween(a,b){ return Math.round((new Date(b+"T12:00:00") - new Date(a+"T12:00:00"))/86400000); }
+function whenText(due){
+  if(!due) return "";
+  const d = daysBetween(today(), due);
+  if(d === 0) return "today";
+  if(d === 1) return "tomorrow";
+  if(d === -1) return "1 day late";
+  if(d < 0) return Math.abs(d)+" days late";
+  return "in "+d+" days";
+}
+function fmtNum(n){
+  n = Number(n)||0;
+  if(n >= 1000000) return (n/1000000).toFixed(n%1000000?1:0).replace(/\.0$/,"")+"M";
+  if(n >= 1000)    return (n/1000).toFixed(n%1000?1:0).replace(/\.0$/,"")+"K";
+  return String(n);
+}
+function parseNum(v){
+  if(v==null) return 0;
+  if(typeof v === "number") return v;
+  let s = String(v).trim().replace(/,/g,"").replace(/\s/g,"");
+  const m = s.match(/^([\d.]+)\s*([KkMm])?/);
+  if(!m) return 0;
+  let n = parseFloat(m[1]); if(isNaN(n)) return 0;
+  if(m[2] && m[2].toLowerCase()==="k") n *= 1000;
+  if(m[2] && m[2].toLowerCase()==="m") n *= 1000000;
+  return Math.round(n);
+}
+function parsePct(v){
+  if(v==null) return 0;
+  const m = String(v).match(/([\d.]+)\s*%?/);
+  return m ? Math.round(parseFloat(m[1])*10)/10 : 0;
+}
+function cleanHandle(v){
+  if(!v) return "";
+  const s = String(v).trim();
+  const at = s.match(/@([A-Za-z0-9._]{2,})/);
+  if(at) return "@"+at[1].replace(/\.+$/,"");
+  const url = s.match(/tiktok\.com\/@([A-Za-z0-9._]+)/i) || s.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+  if(url) return "@"+url[1];
+  const bare = s.match(/^[A-Za-z0-9._]{2,}$/);
+  return bare ? "@"+s : "";
+}
+function slug(handle){ return String(handle||"").replace(/^@/,"").toLowerCase(); }
+// Only ever greet someone by a name you actually set. A handle is not a name,
+// and "Hi Coll," out of @collreads is worse than no email at all.
+function firstName(c){
+  return (c.name && /[a-z]/i.test(c.name)) ? c.name.trim().split(/[\s,]/)[0] : "";
+}
+function nameGuess(c){
+  const s = slug(c.handle)
+    .replace(/(reads?|reading|books?|bookish|library|libraryy|shelf|shelves|bookshelf|official|tiktok|xo+|\d+)/g," ")
+    .replace(/[._]+/g," ").trim().split(/\s+/)[0];
+  return s && s.length > 2 ? s.charAt(0).toUpperCase()+s.slice(1) : "";
+}
+// The niche decides the lane. The longer "why they fit" line only gets a say
+// when the niche matches nothing, because it name-drops words from every lane
+// at once and would drag half the desk into the wrong bucket.
+function laneFor(niche, extra){
+  const pick = text => {
+    const t = String(text||"").toLowerCase();
+    let best = "", score = 0;
+    for(const l of CFG.lanes){
+      if(!l.match.length) continue;
+      const s = l.match.reduce((n,w) => n + (t.includes(w) ? 1 : 0), 0);
+      if(s > score){ score = s; best = l.id; }
+    }
+    return best;
+  };
+  return pick(niche) || pick(extra) || "general";
+}
+function lane(id){ return CFG.lanes.find(l=>l.id===id) || CFG.lanes[CFG.lanes.length-1]; }
+function refFor(c){ return CFG.refBase + slug(c.handle); }
+
+/* ============================ STORE ============================ */
+let state = { creators: [] };
+let undoSnapshot = null;
+
+function loadStore(){
+  let raw = null;
+  try { raw = localStorage.getItem(KEY); } catch(e){ return; }
+  if(!raw) return;
+  try {
+    const d = JSON.parse(raw);
+    if(d && Array.isArray(d.creators)) state = d;
+  } catch(e){
+    // Never silently drop data we could not read. Park it and start clean.
+    try { localStorage.setItem(KEY+"-unreadable-"+Date.now(), raw); } catch(_){}
+    console.warn("Saved data could not be read. A copy was kept under "+KEY+"-unreadable-*");
+  }
+}
+function save(){
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+    $("#storeStatus").textContent = "Saved on this computer";
+  } catch(e){
+    $("#storeStatus").textContent = "Could not save. Back up now.";
+  }
+}
+function snapshot(){ undoSnapshot = JSON.stringify(state); }
+function undo(){
+  if(!undoSnapshot) return;
+  state = JSON.parse(undoSnapshot); undoSnapshot = null;
+  save(); renderAll(); toast("Undone");
+}
+function byId(id){ return state.creators.find(c=>c.id===id); }
+
+/* ============================ MUTATIONS ============================ */
+function newCreator(o){
+  const handle = cleanHandle(o.handle) || (o.email ? "@"+o.email.split("@")[0] : "");
+  const id = slug(handle) || ("c"+Date.now()+Math.floor(Math.random()*999));
+  return {
+    id, handle: handle || "@"+id,
+    name: o.name || "", email: o.email || "",
+    followers: o.followers || 0, engagement: o.engagement || 0,
+    niche: o.niche || "", why: o.why || "",
+    priority: o.priority || 0,
+    lane: o.lane || laneFor(o.niche, o.why),
+    stage: "shortlist",
+    nextStep: { label: STAGES.shortlist.next.label, due: today() },
+    followUpDate: today(),
+    chases: 0,
+    notes: "",
+    videos: [], posts: [],
+    activity: [{ at: new Date().toISOString(), text: "Added to the desk" }],
+    addedAt: new Date().toISOString(),
+    _modAt: Date.now()
+  };
+}
+function logAct(c, text){
+  c.activity = c.activity || [];
+  c.activity.unshift({ at:new Date().toISOString(), text });
+  c._modAt = Date.now();
+}
+// The one rule that keeps a creator off the floor: every action sets what is next.
+function setNextStep(c, label, due){
+  c.nextStep = label ? { label, due } : null;
+  c.followUpDate = label ? due : null;   // always mirrors nextStep.due
+  c._modAt = Date.now();
+}
+function setStage(c, stage, note){
+  c.stage = stage;
+  const def = STAGES[stage];
+  if(def && def.next) setNextStep(c, def.next.label, addDays(def.next.days));
+  else setNextStep(c, null, null);
+  if(note) logAct(c, note);
+  save();
+}
+
+/* ============================ EMAIL ============================ */
+function buildEmail(c){
+  const L = lane(c.lane);
+  const body = L.body
+    .replace(/\{first\}/g, firstName(c) || "{FIRST NAME}")
+    .replace(/\{OFFER\}/g, CFG.offer)
+    .replace(/\{REF\}/g, refFor(c))
+    .replace(/\{SIGNOFF\}/g, CFG.brand.signoff);
+  return { subject: L.subject, body };
+}
+function openMail(c, how){
+  const { subject, body } = buildEmail(c);
+  const to = c.email || "";
+  let url;
+  if(how === "gmail"){
+    url = "https://mail.google.com/mail/?view=cm&fs=1"
+        + "&to=" + encodeURIComponent(to)
+        + "&su=" + encodeURIComponent(subject)
+        + "&body=" + encodeURIComponent(body);
+  } else {
+    url = "mailto:" + encodeURIComponent(to)
+        + "?subject=" + encodeURIComponent(subject)
+        + "&body=" + encodeURIComponent(body);
+  }
+  window.open(url, "_blank", "noopener");
+}
+async function copyText(t, msg){
+  try {
+    await navigator.clipboard.writeText(t);
+    toast(msg || "Copied");
+  } catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = t; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); toast(msg || "Copied"); }
+    catch(_){ toast("Could not copy. Select it by hand."); }
+    ta.remove();
+  }
+}
+
+/* ============================ PARSING ============================ */
+function stripBom(t){ return t.replace(/^﻿/, ""); }
+
+function tokenize(text, delim){
+  const rows=[]; let row=[], field="", inQ=false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(inQ){
+      if(c === '"'){ if(text[i+1] === '"'){ field+='"'; i++; } else inQ=false; }
+      else field += c;
+    } else {
+      if(c === '"') inQ = true;
+      else if(c === delim){ row.push(field); field=""; }
+      else if(c === "\n"){ row.push(field); rows.push(row); row=[]; field=""; }
+      else if(c === "\r"){ /* skip */ }
+      else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+// A pasted table can be tabs, aligned spaces, commas or pipes, and a copied
+// table often holds commas inside its cells. So try every separator and keep
+// the one that gives the most consistent number of columns.
+function scoreRows(rows){
+  const real = rows.filter(r => r.some(c => String(c).trim() !== ""));
+  if(real.length < 2) return -1;
+  const counts = {};
+  real.slice(0, 12).forEach(r => { counts[r.length] = (counts[r.length]||0) + 1; });
+  let cols = 0, hits = 0;
+  for(const k in counts){ if(counts[k] > hits || (counts[k] === hits && +k > cols)){ hits = counts[k]; cols = +k; } }
+  if(cols < 2) return -1;
+  return hits * 10 + Math.min(cols, 12);
+}
+function splitRows(text){
+  text = stripBom(text).trim();
+  if(!text) return [];
+  const lines = text.split(/\r?\n/).filter(l => l.trim() !== "");
+
+  // A markdown table is unambiguous, take it straight away.
+  if(lines.filter(l => l.trim().startsWith("|")).length >= 2){
+    return lines
+      .filter(l => l.trim().startsWith("|"))
+      .map(l => l.trim().replace(/^\|/,"").replace(/\|$/,"").split("|").map(c=>c.trim()))
+      .filter(r => !r.every(c => /^:?-{2,}:?$/.test(c)));
+  }
+
+  const trimRow = r => r.map(c => String(c).trim());
+  const candidates = [];
+  if(text.includes("\t")) candidates.push(tokenize(text, "\t").map(trimRow));
+  candidates.push(lines.map(l => l.split(/ {2,}|\t/).map(c => c.trim())));
+  if(text.includes(",")) candidates.push(tokenize(text, ",").map(trimRow));
+
+  let best = null, bestScore = -1;
+  candidates.forEach(rows => {
+    const s = scoreRows(rows);
+    if(s > bestScore){ bestScore = s; best = rows; }
+  });
+  if(!best || bestScore < 0) return lines.map(l => [l.trim()]);
+  return best.filter(r => r.some(c => String(c).trim() !== ""));
+}
+
+const HEADERS = {
+  handle:     ["creator","creator handle","handle","account","username","tiktok","profile","creator name"],
+  email:      ["email","contact","contact email","public contact email","public email","e-mail"],
+  followers:  ["followers","follower count","follower","subs","subscribers","audience"],
+  engagement: ["engagement","recent post engagement","eng","engagement rate","er"],
+  niche:      ["niche","category","topic","content style","style","lane","content"],
+  why:        ["why","why they fit","why each person fits reedr","why they fit reedr","fit","reason","rationale","campaign fit","notes","note","why it fits"],
+  priority:   ["priority","rank","#","order"],
+  name:       ["name","full name","real name","display name"],
+  video:      ["video link","video url","url","link","video","post"],
+  views:      ["views","view","plays"],
+  likes:      ["likes","like"],
+  comments:   ["comments","comment"],
+  posted:     ["posted","date","post date","published"],
+  caption:    ["caption","description","text"],
+  tag:        ["tag","label","group"]
+};
+function mapHeader(cells){
+  const map = {}; let hits = 0;
+  cells.forEach((cell, i) => {
+    const c = String(cell).toLowerCase().replace(/[^a-z0-9# ]/g,"").trim();
+    if(!c) return;
+    for(const key in HEADERS){
+      if(map[key] != null) continue;
+      if(HEADERS[key].some(h => c === h || (h.length > 4 && c.includes(h)))){ map[key] = i; hits++; return; }
+    }
+  });
+  return hits >= 2 ? map : null;
+}
+const RX_EMAIL = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+const RX_URL   = /https?:\/\/\S+/i;
+
+function sniffRow(cells){
+  // No usable header. Work out each column from what is actually in it.
+  const out = {}; const left = [];
+  cells.forEach(cell => {
+    const s = String(cell).trim();
+    if(!s) return;
+    if(!out.video && RX_URL.test(s) && /tiktok|instagram|youtube/i.test(s)){ out.video = s; return; }
+    if(!out.email && RX_EMAIL.test(s) && !s.includes(" ")){ out.email = s.match(RX_EMAIL)[0]; return; }
+    if(!out.handle && /@[A-Za-z0-9._]{2,}/.test(s) && s.length < 40 && !RX_EMAIL.test(s)){ out.handle = cleanHandle(s); return; }
+    if(!out.engagement && /^[\d.]+\s*%$/.test(s)){ out.engagement = parsePct(s); return; }
+    if(!out.followers && /^[\d.,]+\s*[KkMm]$/.test(s)){ out.followers = parseNum(s); return; }
+    if(!out.posted && /^\d{4}-\d{2}-\d{2}$/.test(s)){ out.posted = s; return; }
+    left.push(s);
+  });
+  const words = left.filter(s => /[a-z]/i.test(s));
+  const nums  = left.filter(s => /^[\d.,]+$/.test(s));
+  if(out.followers == null && nums.length) out.followers = parseNum(nums.sort((a,b)=>parseNum(b)-parseNum(a))[0]);
+  if(words.length){
+    const sorted = words.slice().sort((a,b)=>b.length-a.length);
+    out.why = sorted[0];
+    if(sorted.length > 1) out.niche = sorted[sorted.length-1];
+  }
+  return out;
+}
+function readRow(cells, map){
+  const g = k => (map && map[k] != null && cells[map[k]] != null) ? String(cells[map[k]]).trim() : "";
+  if(!map) return sniffRow(cells);
+  const out = {};
+  const handle = cleanHandle(g("handle")) || cleanHandle(g("video"));
+  if(handle) out.handle = handle;
+  const em = (g("email").match(RX_EMAIL) || [])[0]; if(em) out.email = em;
+  if(g("followers"))  out.followers  = parseNum(g("followers"));
+  if(g("engagement")) out.engagement = parsePct(g("engagement"));
+  if(g("niche"))    out.niche    = g("niche");
+  if(g("why"))      out.why      = g("why");
+  if(g("priority")) out.priority = parseNum(g("priority"));
+  if(g("name") && !/^@/.test(g("name"))) out.name = g("name");
+  if(g("video") && RX_URL.test(g("video"))) out.video = (g("video").match(RX_URL)||[])[0];
+  if(g("views"))    out.views    = parseNum(g("views"));
+  if(g("likes"))    out.likes    = parseNum(g("likes"));
+  if(g("comments")) out.comments = parseNum(g("comments"));
+  if(g("posted"))   out.posted   = g("posted");
+  if(g("caption"))  out.caption  = g("caption");
+  if(g("tag"))      out.tag      = g("tag");
+  // A handle can still be hiding in a cell the header did not name.
+  if(!out.handle){
+    for(const cell of cells){
+      const h = cleanHandle(cell);
+      if(h && !RX_EMAIL.test(String(cell))){ out.handle = h; break; }
+    }
+  }
+  if(!out.email){
+    for(const cell of cells){
+      const m = String(cell).match(RX_EMAIL);
+      if(m){ out.email = m[0]; break; }
+    }
+  }
+  return out;
+}
+function parsePaste(text){
+  const rows = splitRows(text);
+  if(!rows.length) return { creators:[], videos:[], skipped:0 };
+  let map = mapHeader(rows[0]);
+  const body = map ? rows.slice(1) : rows;
+  const creators = [], videos = []; let skipped = 0;
+  for(const cells of body){
+    if(cells.length < 2 && !RX_URL.test(cells[0]||"")){ skipped++; continue; }
+    const r = readRow(cells, map);
+    if(r.video){
+      const h = r.handle || cleanHandle(r.video);
+      if(!h){ skipped++; continue; }
+      videos.push({ handle:h, url:r.video, views:r.views||0, likes:r.likes||0,
+                    comments:r.comments||0, posted:r.posted||"", caption:r.caption||"", tag:r.tag||"" });
+      continue;
+    }
+    if(!r.handle && !r.email){ skipped++; continue; }
+    creators.push(r);
+  }
+  return { creators, videos, skipped };
+}
+function planImport(parsed){
+  const plan = { add:[], merge:[], vids:0, newFromVids:0 };
+  const seen = new Map();
+  state.creators.forEach(c => seen.set(c.id, c));
+  parsed.creators.forEach(r => {
+    const id = slug(cleanHandle(r.handle) || ("@"+(r.email||"").split("@")[0]));
+    if(seen.has(id)) plan.merge.push({ row:r, existing: seen.get(id) });
+    else { plan.add.push(r); seen.set(id, { id, handle:r.handle, pending:true }); }
+  });
+  parsed.videos.forEach(v => {
+    const id = slug(v.handle);
+    plan.vids++;
+    if(!seen.has(id)){ plan.newFromVids++; seen.set(id, { id, pending:true }); }
+  });
+  return plan;
+}
+function applyImport(parsed){
+  snapshot();
+  let added = 0, merged = 0, vids = 0;
+  const find = id => state.creators.find(c => c.id === id);
+
+  parsed.creators.forEach(r => {
+    const handle = cleanHandle(r.handle) || ("@"+(r.email||"").split("@")[0]);
+    const id = slug(handle);
+    let c = find(id);
+    if(!c){ c = newCreator(r); state.creators.push(c); added++; }
+    else {
+      // Fill empty only. Never overwrite something you have already worked on.
+      let touched = false;
+      ["email","name","niche","why"].forEach(k => { if(!c[k] && r[k]){ c[k] = r[k]; touched = true; } });
+      ["followers","engagement","priority"].forEach(k => { if(!c[k] && r[k]){ c[k] = r[k]; touched = true; } });
+      if(touched){ logAct(c, "Topped up from an import"); merged++; }
+    }
+  });
+
+  parsed.videos.forEach(v => {
+    const id = slug(v.handle);
+    let c = find(id);
+    if(!c){
+      c = newCreator({ handle: v.handle, niche: v.tag || "", why: v.caption ? v.caption.slice(0,180) : "" });
+      state.creators.push(c); added++;
+    }
+    c.videos = c.videos || [];
+    if(!c.videos.some(x => x.url === v.url)){ c.videos.push(v); vids++; c._modAt = Date.now(); }
+    // Their own captions are the best evidence of which lane they are in.
+    if(c.lane === "general"){
+      const guess = laneFor((v.tag||"") + " " + (v.caption||""), c.niche);
+      if(guess !== "general") c.lane = guess;
+    }
+  });
+
+  state.creators.forEach(c => { if(!c.nextStep && !CLOSED.includes(c.stage)) setNextStep(c, "Decide what happens next", today()); });
+  save(); renderAll();
+  toast(added+" added, "+merged+" topped up, "+vids+" videos attached", "Undo", undo);
+}
+
+/* ============================ VIEWS ============================ */
+let view = "today";
+function switchView(v){
+  view = v;
+  $$(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === v)));
+  ["today","creators","results","import"].forEach(x => { $("#view-"+x).hidden = (x !== v); });
+  renderAll();
+}
+function dueList(){
+  const t = today();
+  return state.creators
+    .filter(c => !CLOSED.includes(c.stage))
+    .filter(c => !c.nextStep || !c.nextStep.due || c.nextStep.due <= t)
+    .sort((a,b) => {
+      const da = a.nextStep && a.nextStep.due ? a.nextStep.due : "0000-00-00";
+      const db = b.nextStep && b.nextStep.due ? b.nextStep.due : "0000-00-00";
+      if(da !== db) return da < db ? -1 : 1;
+      if((a.priority||99) !== (b.priority||99)) return (a.priority||99) - (b.priority||99);
+      return (b.followers||0) - (a.followers||0);
+    });
+}
+function renderCounts(){
+  $("#cTodayN").textContent    = dueList().length || "";
+  $("#cCreatorsN").textContent = state.creators.length || "";
+  const posts = state.creators.reduce((n,c)=> n + (c.posts||[]).length, 0);
+  $("#cResultsN").textContent  = posts || "";
+}
+
+/* ---------- Today ---------- */
+function renderToday(){
+  const list = dueList();
+  const box  = $("#todayBody");
+  const total = state.creators.length;
+  $("#todaySub").textContent = total
+    ? (list.length
+        ? (list.length === total ? list.length + " waiting on you" : list.length + " due, of " + total + " creators")
+        : "Nothing due. " + total + " creators are on a later date.")
+    : "";
+
+  if(!total){
+    box.innerHTML = `<div class="empty">
+      <h3>Nothing on the desk yet</h3>
+      <p>Ask LightReel for a creator table, copy it, and paste it into Import. The desk turns it into a list of people to email, one at a time.</p>
+      <button class="btn btn-primary" data-go="import">Go to Import</button>
+    </div>`;
+    return;
+  }
+  if(!list.length){
+    const next = state.creators
+      .filter(c => c.nextStep && c.nextStep.due)
+      .sort((a,b)=> a.nextStep.due < b.nextStep.due ? -1 : 1)[0];
+    box.innerHTML = `<div class="empty">
+      <h3>Desk clear</h3>
+      <p>${ next ? "Next up is " + esc(next.handle) + " " + esc(whenText(next.nextStep.due)) + "." : "Every creator is closed or paused." }</p>
+      <button class="btn" data-go="creators">See all creators</button>
+    </div>`;
+    return;
+  }
+  box.innerHTML = '<div class="today-list">' + list.map(c => cardDue(c)).join("") + "</div>";
+}
+function cardDue(c){
+  const L = lane(c.lane);
+  const due = c.nextStep && c.nextStep.due;
+  const late = due && due < today();
+  const step = c.nextStep ? c.nextStep.label : "Decide what happens next";
+  return `<article class="card-due ${late?"overdue":""}">
+    <div class="due-top">
+      <div style="min-width:0">
+        <div class="due-handle"><button data-open="${esc(c.id)}">${esc(c.handle)}</button></div>
+        <div class="due-meta">
+          <span class="tag tag-lane">${esc(L.label)}</span>
+          <span class="due-num">${fmtNum(c.followers)} followers</span>
+          ${c.engagement ? `<span class="due-num">${c.engagement}% engaged</span>` : ""}
+          ${c.email ? "" : `<span class="tag tag-warn">no email</span>`}
+        </div>
+      </div>
+      <span class="tag">${esc(STAGES[c.stage] ? STAGES[c.stage].label : c.stage)}</span>
+    </div>
+    ${c.why ? `<p class="due-why">${esc(c.why)}</p>` : ""}
+    <div class="due-step">
+      <span class="label">${esc(step)}</span>
+      <span class="when ${late?"late":""}">${esc(whenText(due))}</span>
+      ${primaryAction(c)}
+      <button class="btn btn-sm btn-ghost" data-snooze="${esc(c.id)}">Later</button>
+      <button class="btn btn-sm btn-ghost" data-open="${esc(c.id)}">Open</button>
+    </div>
+  </article>`;
+}
+function profileUrl(c){ return "https://www.tiktok.com/" + c.handle; }
+function primaryAction(c){
+  const id = esc(c.id);
+  switch(c.stage){
+    case "shortlist": return c.email
+      ? `<button class="btn btn-sm btn-primary" data-send="${id}">Write the email</button>`
+      : `<button class="btn btn-sm btn-primary" data-profile="${id}">Find their email</button>`;
+    case "emailed":   return `<button class="btn btn-sm btn-primary" data-chase="${id}">Chase</button>
+                              <button class="btn btn-sm" data-replied="${id}">They replied</button>`;
+    case "replied":   return `<button class="btn btn-sm btn-primary" data-brief="${id}">Send the brief</button>`;
+    case "briefed":   return `<button class="btn btn-sm btn-primary" data-posted="${id}">It went up</button>
+                              <button class="btn btn-sm btn-ghost" data-wait="${id}">Not yet</button>`;
+    case "posted":    return `<button class="btn btn-sm btn-primary" data-result="${id}">Log the numbers</button>`;
+    case "measured":  return `<button class="btn btn-sm btn-primary" data-renew="${id}">Run again</button>
+                              <button class="btn btn-sm" data-pause="${id}">Stop here</button>`;
+    case "renew":     return `<button class="btn btn-sm btn-primary" data-brief="${id}">Send the brief</button>`;
+    default:          return `<button class="btn btn-sm" data-open="${id}">Open</button>`;
+  }
+}
+
+/* ---------- Creators ---------- */
+function filtered(){
+  const q  = ($("#fSearch").value||"").toLowerCase().trim();
+  const fl = $("#fLane").value, fs = $("#fStage").value, sort = $("#fSort").value;
+  let list = state.creators.slice();
+  if(q)  list = list.filter(c => (c.handle+" "+c.name+" "+c.niche+" "+c.why+" "+c.email).toLowerCase().includes(q));
+  if(fl) list = list.filter(c => c.lane === fl);
+  if(fs) list = list.filter(c => c.stage === fs);
+  const cmp = {
+    priority:   (a,b) => (a.priority||99) - (b.priority||99) || (b.followers||0)-(a.followers||0),
+    followers:  (a,b) => (b.followers||0) - (a.followers||0),
+    engagement: (a,b) => (b.engagement||0) - (a.engagement||0),
+    due:        (a,b) => ((a.nextStep&&a.nextStep.due)||"9999") < ((b.nextStep&&b.nextStep.due)||"9999") ? -1 : 1,
+    added:      (a,b) => (b.addedAt||"") < (a.addedAt||"") ? -1 : 1
+  }[sort] || (()=>0);
+  return list.sort(cmp);
+}
+function renderCreators(){
+  const list = filtered();
+  $("#creatorsSub").textContent = state.creators.length
+    ? list.length + " of " + state.creators.length + " shown"
+    : "";
+  const box = $("#creatorsBody");
+  if(!state.creators.length){
+    box.innerHTML = `<div class="empty"><h3>No creators yet</h3>
+      <p>Import a LightReel table, or add someone by hand.</p>
+      <button class="btn btn-primary" data-go="import">Go to Import</button></div>`;
+    return;
+  }
+  if(!list.length){ box.innerHTML = `<div class="empty"><h3>Nothing matches</h3><p>Loosen the filters.</p></div>`; return; }
+  box.innerHTML = `<div class="tbl-wrap"><table class="tbl">
+    <thead><tr>
+      <th>Creator</th><th>Lane</th><th class="num">Followers</th><th class="num">Engaged</th>
+      <th>Stage</th><th>Next step</th>
+    </tr></thead>
+    <tbody>${ list.map(c => rowCreator(c)).join("") }</tbody>
+  </table></div>`;
+}
+function rowCreator(c){
+  const L = lane(c.lane);
+  const i = FLOW.indexOf(c.stage);
+  const closed = CLOSED.includes(c.stage);
+  const pips = FLOW.map((_,n) => `<span class="pip ${closed?"closed":(n<=i?"on":"")}"></span>`).join("");
+  const due  = c.nextStep && c.nextStep.due;
+  const late = due && due < today();
+  return `<tr data-open="${esc(c.id)}">
+    <td><div class="h">${esc(c.handle)}</div>${ c.email ? `<div class="sub">${esc(c.email)}</div>` : `<div class="sub">no email yet</div>` }</td>
+    <td><span class="tag tag-lane">${esc(L.label)}</span></td>
+    <td class="num n">${fmtNum(c.followers)}</td>
+    <td class="num n">${c.engagement ? c.engagement+"%" : "&mdash;"}</td>
+    <td><span class="pips" title="${esc(STAGES[c.stage]?STAGES[c.stage].label:c.stage)}">${pips}</span>
+        <div class="sub">${esc(STAGES[c.stage]?STAGES[c.stage].label:c.stage)}</div></td>
+    <td>${ c.nextStep ? esc(c.nextStep.label) : "&mdash;" }
+        <div class="sub" style="${late?"color:var(--warn)":""}">${esc(whenText(due))}</div></td>
+  </tr>`;
+}
+
+/* ---------- Results ---------- */
+function allPosts(){
+  const out = [];
+  state.creators.forEach(c => (c.posts||[]).forEach(p => out.push({ c, p })));
+  return out.sort((a,b) => (b.p.signups||0) - (a.p.signups||0) || (b.p.views||0) - (a.p.views||0));
+}
+function renderResults(){
+  const rows = allPosts();
+  const box  = $("#resultsBody");
+  $("#resultsSub").textContent = rows.length ? rows.length + (rows.length === 1 ? " video live" : " videos live") : "";
+  if(!rows.length){
+    box.innerHTML = `<div class="empty"><h3>No videos logged yet</h3>
+      <p>When a creator posts, open them and log the link. Once you have views and signups here, this page tells you who to run again.</p>
+      <button class="btn" data-go="creators">See all creators</button></div>`;
+    return;
+  }
+  const max = Math.max.apply(null, rows.map(r => r.p.views || 0).concat([1]));
+  const tv  = rows.reduce((n,r)=> n + (r.p.views||0), 0);
+  const ts  = rows.reduce((n,r)=> n + (r.p.signups||0), 0);
+  const tf  = rows.reduce((n,r)=> n + (r.p.fee||0), 0);
+  box.innerHTML = `<div class="ledger">
+    <div class="ledger-head"><div>Creator</div><div class="bar-h">Views</div><div class="r">Rate</div><div class="r">Readers</div></div>
+    ${ rows.map(r => ledgerRow(r, max)).join("") }
+    <div class="totals">
+      <div><span>Videos</span><strong>${rows.length}</strong></div>
+      <div><span>Views</span><strong>${fmtNum(tv)}</strong></div>
+      <div><span>Readers</span><strong>${ts}</strong></div>
+      <div><span>Views per reader</span><strong>${ ts ? fmtNum(Math.round(tv/ts)) : "&mdash;" }</strong></div>
+      ${ tf ? `<div><span>Spent</span><strong>&pound;${tf}</strong></div>
+               <div><span>Cost per reader</span><strong>${ ts ? "&pound;"+(tf/ts).toFixed(2) : "&mdash;" }</strong></div>` : "" }
+    </div>
+  </div>
+  <p style="margin-top:14px;color:var(--ink-3);font-size:12.5px;max-width:70ch">
+    Readers are the signups you enter by hand. Traffic per creator is already visible in PostHog under the landing URL, because every ref link carries the handle.
+  </p>`;
+}
+function ledgerRow(r, max){
+  const { c, p } = r;
+  const pct = Math.max(2, Math.round(((p.views||0)/max)*100));
+  const rate = p.views ? ((p.signups||0)/p.views*100) : 0;
+  const verdict = (p.signups||0) >= CFG.renewIfSignups ? "good"
+                : (p.views||0) >= 5000 && !(p.signups||0) ? "bad"
+                : "";
+  return `<div class="ledger-row">
+    <div class="who">
+      <span class="h"><button data-open="${esc(c.id)}" style="font:inherit;color:inherit">${esc(c.handle)}</button></span>
+      <span class="d">${esc(p.date||"")} ${ verdict==="good" ? '<span class="tag tag-good" style="margin-left:4px">run again</span>' : verdict==="bad" ? '<span class="tag tag-bad" style="margin-left:4px">did not land</span>' : "" }</span>
+    </div>
+    <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div><span class="bar-label">${fmtNum(p.views)}</span></div>
+    <div class="sg" style="font-size:12px">${ rate ? rate.toFixed(2)+"%" : "&mdash;" }</div>
+    <div class="sg">${p.signups||0}<small>readers</small></div>
+  </div>`;
+}
+
+/* ---------- Panel ---------- */
+let openId = null;
+function openPanel(id){
+  const c = byId(id); if(!c) return;
+  openId = id;
+  const L = lane(c.lane);
+  const { subject, body } = buildEmail(c);
+  const stageOpts = Object.keys(STAGES).map(s =>
+    `<option value="${s}" ${c.stage===s?"selected":""}>${esc(STAGES[s].label)}</option>`).join("");
+  const laneOpts = CFG.lanes.map(l =>
+    `<option value="${l.id}" ${c.lane===l.id?"selected":""}>${esc(l.label)}</option>`).join("");
+
+  $("#panel").innerHTML = `
+    <div class="panel-head">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="min-width:0">
+          <h3>${esc(c.handle)}</h3>
+          ${ c.name ? `<div class="who-name">${esc(c.name)}</div>` : "" }
+        </div>
+        <button class="btn btn-sm btn-ghost" id="pClose" style="margin-left:auto">Close</button>
+      </div>
+      <div class="due-meta" style="margin-top:9px">
+        <span class="tag tag-lane">${esc(L.label)}</span>
+        <span class="tag">${esc(STAGES[c.stage].label)}</span>
+        <span class="due-num">${fmtNum(c.followers)} followers</span>
+        ${ c.engagement ? `<span class="due-num">${c.engagement}%</span>` : "" }
+      </div>
+    </div>
+
+    <div class="panel-body">
+
+      <div class="blk">
+        <h4>Next step</h4>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input class="field" id="pStepLabel" style="flex:1;min-width:150px" value="${esc(c.nextStep?c.nextStep.label:"")}" placeholder="Nothing set">
+          <input class="field" id="pStepDue" type="date" value="${esc(c.nextStep&&c.nextStep.due?c.nextStep.due:"")}">
+        </div>
+      </div>
+
+      <div class="blk">
+        <h4>The email</h4>
+        ${ !c.name ? `<div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <label class="lbl" for="pFirst" style="margin:0;white-space:nowrap">Who are you writing to?</label>
+          <input class="field" id="pFirst" style="flex:1" placeholder="${esc(nameGuess(c) || "First name")}">
+        </div>` : "" }
+        <div class="quote" style="margin-bottom:10px">${esc(subject)}</div>
+        <textarea class="paste" id="pBody" style="min-height:200px;font-family:var(--sans);font-size:13px">${esc(body)}</textarea>
+        <div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" data-send="${esc(c.id)}">${ CFG.mailClient==="gmail" ? "Open in Gmail" : "Open in Mail" }</button>
+          <button class="btn btn-sm" data-send2="${esc(c.id)}">${ CFG.mailClient==="gmail" ? "Mail app" : "Gmail" }</button>
+          <button class="btn btn-sm btn-ghost" data-copyemail="${esc(c.id)}">Copy it</button>
+        </div>
+        <p style="font-size:12px;color:var(--ink-3);margin-top:8px">Fill the bracketed line with something only you could have written. That line is the whole difference between this and a mailshot.</p>
+      </div>
+
+      <div class="blk">
+        <h4>Their link</h4>
+        <div class="ref-row">
+          <input class="field" id="pRef" readonly value="${esc(refFor(c))}">
+          <button class="btn btn-sm" data-copyref="${esc(c.id)}">Copy</button>
+        </div>
+      </div>
+
+      <div class="blk">
+        <h4>The brief for this lane</h4>
+        <div class="brief-box">${esc(L.brief)}</div>
+        <button class="btn btn-sm" style="margin-top:9px" data-copybrief="${esc(c.id)}">Copy the brief</button>
+      </div>
+
+      <div class="blk">
+        <h4>What they posted for you</h4>
+        <div id="pPosts">${ postsHtml(c) }</div>
+        <button class="btn btn-sm" style="margin-top:9px" data-addpost="${esc(c.id)}">Log a video</button>
+      </div>
+
+      ${ (c.videos||[]).length ? `<div class="blk">
+        <h4>Their own videos, from LightReel</h4>
+        ${ c.videos.map(v => `<div class="vid">
+            <div class="top">
+              <a href="${esc(v.url)}" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:12px">${esc((v.posted||"video"))}</a>
+              <span class="due-num">${fmtNum(v.views)} views</span>
+              ${ v.likes ? `<span class="due-num">${fmtNum(v.likes)} likes</span>` : "" }
+              ${ v.tag ? `<span class="tag">${esc(v.tag)}</span>` : "" }
+            </div>
+            ${ v.caption ? `<div class="cap">${esc(v.caption)}</div>` : "" }
+          </div>`).join("") }
+      </div>` : "" }
+
+      <div class="blk">
+        <h4>Details</h4>
+        <div class="grid2">
+          <div><label class="lbl" for="pName">Name</label><input class="field" id="pName" value="${esc(c.name)}" placeholder="First name"></div>
+          <div><label class="lbl" for="pEmail">Email</label><input class="field" id="pEmail" value="${esc(c.email)}" placeholder="none yet"></div>
+          <div><label class="lbl" for="pFollowers">Followers</label><input class="field" id="pFollowers" value="${esc(c.followers)}"></div>
+          <div><label class="lbl" for="pEng">Engagement %</label><input class="field" id="pEng" value="${esc(c.engagement)}"></div>
+          <div><label class="lbl" for="pLane">Lane</label><select class="field" id="pLane">${laneOpts}</select></div>
+          <div><label class="lbl" for="pStage">Stage</label><select class="field" id="pStage">${stageOpts}</select></div>
+        </div>
+        <label class="lbl" style="margin-top:10px" for="pNiche">Niche</label>
+        <input class="field" id="pNiche" value="${esc(c.niche)}">
+        <label class="lbl" style="margin-top:10px" for="pWhy">Why they fit</label>
+        <textarea class="field" id="pWhy" rows="3">${esc(c.why)}</textarea>
+        <label class="lbl" style="margin-top:10px" for="pNotes">Your notes</label>
+        <textarea class="field" id="pNotes" rows="3" placeholder="What they said, what they want">${esc(c.notes)}</textarea>
+      </div>
+
+      <div class="blk">
+        <h4>History</h4>
+        <div class="act-list">${ (c.activity||[]).map(a =>
+          `<div class="act"><span class="when">${esc(a.at.slice(0,10))}</span><span>${esc(a.text)}</span></div>`).join("") || '<p style="color:var(--ink-3);font-size:13px">Nothing yet.</p>' }</div>
+      </div>
+
+      <button class="btn btn-sm btn-danger" data-del="${esc(c.id)}">Remove from the desk</button>
+    </div>
+
+    <div class="panel-foot">
+      ${ primaryAction(c) }
+      <button class="btn btn-sm btn-ghost" data-pass="${esc(c.id)}" style="margin-left:auto">Not for us</button>
+    </div>`;
+
+  $("#panel").classList.add("open");
+  $("#panel").setAttribute("aria-hidden","false");
+  $("#scrim").classList.add("open");
+  document.body.style.overflow = "hidden";
+  bindPanel(c);
+}
+function postsHtml(c){
+  if(!(c.posts||[]).length) return '<p style="color:var(--ink-3);font-size:13px">Nothing posted yet.</p>';
+  return c.posts.map((p,i) => `<div class="post-row">
+    <div style="min-width:0">
+      <a href="${esc(p.url)}" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:12px;word-break:break-all">${esc(p.url)}</a>
+      <div class="due-num" style="margin-top:3px">${esc(p.date||"")} &middot; ${fmtNum(p.views)} views &middot; ${p.signups||0} readers${ p.fee ? " &middot; &pound;"+p.fee : "" }</div>
+    </div>
+    <button class="btn btn-sm btn-ghost" data-editpost="${esc(c.id)}:${i}">Edit</button>
+  </div>`).join("");
+}
+function bindPanel(c){
+  $("#pClose").onclick = closePanel;
+  const bindField = (sel, key, transform) => {
+    const el = $(sel); if(!el) return;
+    el.onchange = () => {
+      c[key] = transform ? transform(el.value) : el.value;
+      c._modAt = Date.now(); save(); renderAll();
+    };
+  };
+  bindField("#pName","name"); bindField("#pEmail","email");
+  bindField("#pFollowers","followers", parseNum); bindField("#pEng","engagement", parsePct);
+  bindField("#pNiche","niche"); bindField("#pWhy","why"); bindField("#pNotes","notes");
+  const pf = $("#pFirst");
+  if(pf) pf.onchange = () => {
+    const v = pf.value.trim(); if(!v) return;
+    c.name = v; c._modAt = Date.now(); save(); openPanel(c.id); renderAll();
+  };
+  $("#pLane").onchange = () => { c.lane = $("#pLane").value; c._modAt=Date.now(); save(); openPanel(c.id); renderAll(); };
+  $("#pStage").onchange = () => { setStage(c, $("#pStage").value, "Stage set to "+STAGES[$("#pStage").value].label); openPanel(c.id); renderAll(); };
+  const stepSave = () => {
+    const l = $("#pStepLabel").value.trim(), d = $("#pStepDue").value;
+    setNextStep(c, l || null, l ? (d || today()) : null); save(); renderAll();
+  };
+  $("#pStepLabel").onchange = stepSave; $("#pStepDue").onchange = stepSave;
+}
+function closePanel(){
+  openId = null;
+  $("#panel").classList.remove("open");
+  $("#panel").setAttribute("aria-hidden","true");
+  $("#scrim").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+/* ---------- Import preview ---------- */
+let pendingParse = null;
+function renderPreview(parsed){
+  const plan = planImport(parsed);
+  const box  = $("#previewBody");
+  if(!plan.add.length && !plan.merge.length && !plan.vids){
+    box.innerHTML = `<div class="preview"><div class="preview-head"><strong>Nothing readable in that</strong>
+      <span style="color:var(--ink-3);font-size:13px">Check that you copied the table itself, headers and all.</span></div></div>`;
+    pendingParse = null; return;
+  }
+  const items = plan.add.map(r => ({ h: cleanHandle(r.handle) || r.email, w: r.why || r.niche || "", tag:"new" }))
+    .concat(plan.merge.map(m => ({ h: m.existing.handle, w: "already on the desk, will be topped up", tag:"merge" })));
+  box.innerHTML = `<div class="preview">
+    <div class="preview-head">
+      <strong>${plan.add.length} new</strong>
+      <span style="color:var(--ink-3);font-size:13px">${plan.merge.length} already here${ plan.vids ? ", "+plan.vids+" videos" : "" }${ parsed.skipped ? ", "+parsed.skipped+" lines ignored" : "" }</span>
+      <button class="btn btn-primary btn-sm" id="btnApply" style="margin-left:auto">Add them</button>
+      <button class="btn btn-sm btn-ghost" id="btnCancelImport">Cancel</button>
+    </div>
+    <div class="preview-list">${ items.slice(0,60).map(i =>
+      `<div class="preview-item"><span class="h">${esc(i.h||"?")}</span><span class="w">${esc(i.w)}</span></div>`).join("") }</div>
+  </div>`;
+  pendingParse = parsed;
+  $("#btnApply").onclick = () => { applyImport(pendingParse); pendingParse = null; $("#pasteBox").value=""; box.innerHTML=""; switchView("today"); };
+  $("#btnCancelImport").onclick = () => { pendingParse = null; box.innerHTML = ""; };
+}
+
+/* ============================ ACTIONS ============================ */
+function toast(msg, actionLabel, fn){
+  const t = $("#toast"), a = $("#toastAction");
+  $("#toastMsg").textContent = msg;
+  if(actionLabel){ a.hidden = false; a.textContent = actionLabel; a.onclick = () => { fn(); hideToast(); }; }
+  else a.hidden = true;
+  t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(hideToast, actionLabel ? 8000 : 3200);
+}
+function hideToast(){ $("#toast").classList.remove("show"); }
+
+function doSend(c, how){
+  openMail(c, how || CFG.mailClient);
+  if(c.stage === "shortlist"){
+    setStage(c, "emailed", "First email sent");
+    renderAll(); if(openId === c.id) openPanel(c.id);
+    toast("Marked as emailed. Chase set for "+addDays(CFG.chaseAfterDays), "Not sent", () => {
+      setStage(c, "shortlist", "Email was not sent after all"); renderAll(); if(openId===c.id) openPanel(c.id);
+    });
+  }
+}
+function doChase(c){
+  c.chases = (c.chases||0) + 1;
+  logAct(c, "Chased, number "+c.chases);
+  if(c.chases >= 2){
+    setStage(c, "passed", "No reply after two chases");
+    toast("Moved to passed after two chases");
+  } else {
+    setNextStep(c, "Chase, no reply yet", addDays(CFG.chaseAfterDays));
+    openMail(c, CFG.mailClient);
+    toast("Chased. Next look on "+addDays(CFG.chaseAfterDays));
+  }
+  save(); renderAll(); if(openId===c.id) openPanel(c.id);
+}
+function doPost(c){
+  const url = prompt("Link to the video they posted");
+  if(!url) return;
+  const views = parseNum(prompt("Views so far (you can leave this and log it later)", "0") || "0");
+  c.posts = c.posts || [];
+  c.posts.push({ url: url.trim(), views, likes:0, signups:0, fee:0, date: today(), note:"" });
+  setStage(c, "posted", "Posted a video");
+  renderAll(); if(openId===c.id) openPanel(c.id);
+  toast("Logged. Come back on "+addDays(CFG.resultWindowDays)+" for the numbers");
+}
+function doResult(c){
+  c.posts = c.posts || [];
+  if(!c.posts.length){ doPost(c); return; }
+  const p = c.posts[c.posts.length-1];
+  const v = prompt("Views on "+p.url, String(p.views||0)); if(v === null) return;
+  const s = prompt("Reedr signups you can attribute to this video", String(p.signups||0)); if(s === null) return;
+  const f = prompt("What you paid, in pounds. Leave 0 if nothing", String(p.fee||0));
+  p.views = parseNum(v); p.signups = parseNum(s); p.fee = parseNum(f||"0");
+  logAct(c, "Numbers in: "+fmtNum(p.views)+" views, "+p.signups+" readers");
+  setStage(c, "measured", null);
+  renderAll(); if(openId===c.id) openPanel(c.id);
+  toast(p.signups >= CFG.renewIfSignups ? "That worked. Run them again." : "Logged.");
+}
+function doEditPost(c, i){
+  const p = c.posts[i]; if(!p) return;
+  const v = prompt("Views", String(p.views||0)); if(v===null) return;
+  const s = prompt("Readers signed up", String(p.signups||0)); if(s===null) return;
+  const f = prompt("Paid, in pounds", String(p.fee||0));
+  p.views = parseNum(v); p.signups = parseNum(s); p.fee = parseNum(f||"0");
+  c._modAt = Date.now(); save(); renderAll(); if(openId===c.id) openPanel(c.id);
+  toast("Updated");
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-go],[data-open],[data-profile],[data-send],[data-send2],[data-copyemail],[data-copyref],[data-copybrief],[data-snooze],[data-chase],[data-replied],[data-brief],[data-posted],[data-wait],[data-result],[data-renew],[data-pause],[data-pass],[data-del],[data-addpost],[data-editpost]");
+  if(!t) return;
+  const d = t.dataset;
+  const get = k => byId(d[k]);
+
+  if(d.go){ switchView(d.go); return; }
+  if(d.open){ openPanel(d.open); return; }
+
+  if(d.profile){ e.stopPropagation(); const c = get("profile");
+    window.open(profileUrl(c), "_blank", "noopener");
+    logAct(c, "Opened their profile to look for an email");
+    setNextStep(c, "Add their email, then write", today()); save(); renderAll();
+    toast("Their bio is open. Paste the email into Details."); return; }
+
+  if(d.send){ e.stopPropagation(); doSend(get("send")); return; }
+  if(d.send2){ const c = get("send2"); doSend(c, CFG.mailClient === "gmail" ? "mailto" : "gmail"); return; }
+  if(d.copyemail){ const c = get("copyemail"); const b = $("#pBody") ? $("#pBody").value : buildEmail(c).body;
+    copyText(buildEmail(c).subject + "\n\n" + b, "Email copied"); return; }
+  if(d.copyref){ copyText(refFor(get("copyref")), "Link copied"); return; }
+  if(d.copybrief){ const c = get("copybrief"); copyText(lane(c.lane).brief, "Brief copied"); return; }
+
+  if(d.snooze){ e.stopPropagation(); const c = get("snooze");
+    setNextStep(c, c.nextStep ? c.nextStep.label : "Decide what happens next", addDays(CFG.snoozeDays));
+    save(); renderAll(); toast("Back on your desk in "+CFG.snoozeDays+" days"); return; }
+
+  if(d.chase){ e.stopPropagation(); doChase(get("chase")); return; }
+  if(d.replied){ e.stopPropagation(); const c = get("replied"); setStage(c, "replied", "They replied");
+    renderAll(); if(openId===c.id) openPanel(c.id); toast("Send them the brief"); return; }
+  if(d.brief){ e.stopPropagation(); const c = get("brief");
+    copyText(lane(c.lane).brief, "Brief copied, paste it to them");
+    setStage(c, "briefed", "Brief sent"); renderAll(); if(openId===c.id) openPanel(c.id); return; }
+  if(d.posted){ e.stopPropagation(); doPost(get("posted")); return; }
+  if(d.wait){ e.stopPropagation(); const c = get("wait");
+    setNextStep(c, "Check if it went up", addDays(CFG.postCheckDays)); logAct(c,"Not up yet");
+    save(); renderAll(); toast("Checking again on "+addDays(CFG.postCheckDays)); return; }
+  if(d.result){ e.stopPropagation(); doResult(get("result")); return; }
+  if(d.renew){ e.stopPropagation(); const c = get("renew"); setStage(c, "renew", "Running them again");
+    renderAll(); if(openId===c.id) openPanel(c.id); return; }
+  if(d.pause){ e.stopPropagation(); const c = get("pause"); setStage(c, "paused", "Stopped here");
+    renderAll(); if(openId===c.id) openPanel(c.id); toast("Paused"); return; }
+  if(d.pass){ const c = get("pass"); setStage(c, "passed", "Not for us");
+    renderAll(); closePanel(); toast("Passed"); return; }
+
+  if(d.addpost){ doPost(get("addpost")); return; }
+  if(d.editpost){ const [id,i] = d.editpost.split(":"); doEditPost(byId(id), Number(i)); return; }
+
+  if(d.del){ const c = get("del");
+    if(!confirm("Remove "+c.handle+" and everything logged against them?")) return;
+    snapshot(); state.creators = state.creators.filter(x => x.id !== c.id);
+    save(); closePanel(); renderAll(); toast("Removed", "Undo", undo); return; }
+});
+
+/* ============================ WIRING ============================ */
+$$(".tab").forEach(t => t.onclick = () => switchView(t.dataset.view));
+$("#scrim").onclick = closePanel;
+document.addEventListener("keydown", e => { if(e.key === "Escape" && openId) closePanel(); });
+["#fSearch","#fLane","#fStage","#fSort"].forEach(s => { $(s).oninput = renderCreators; $(s).onchange = renderCreators; });
+
+$("#btnParse").onclick = () => {
+  const text = $("#pasteBox").value;
+  if(!text.trim()){ toast("Paste something first"); return; }
+  renderPreview(parsePaste(text));
+};
+$("#btnClearPaste").onclick = () => { $("#pasteBox").value = ""; $("#previewBody").innerHTML = ""; pendingParse = null; };
+$("#btnFile").onclick = () => $("#fileCsv").click();
+$("#fileCsv").onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => { $("#pasteBox").value = r.result; renderPreview(parsePaste(r.result)); };
+  r.readAsText(f);
+  e.target.value = "";
+};
+$("#btnAdd").onclick = () => {
+  const h = prompt("Their handle, for example @collreads"); if(!h) return;
+  const handle = cleanHandle(h); if(!handle){ toast("That does not look like a handle"); return; }
+  if(byId(slug(handle))){ toast("Already on the desk"); openPanel(slug(handle)); return; }
+  const email = prompt("Their email, if you have it") || "";
+  snapshot();
+  const c = newCreator({ handle, email });
+  state.creators.push(c); save(); renderAll(); openPanel(c.id);
+};
+$("#btnExport").onclick = () => {
+  const cols = ["handle","name","email","followers","engagement","niche","lane","stage","next_step","next_due","why","notes","videos_posted","total_views","total_signups","total_paid","ref_link"];
+  const q = v => { const s = String(v==null?"":v); return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; };
+  const lines = [cols.join(",")];
+  state.creators.forEach(c => {
+    const posts = c.posts || [];
+    lines.push([
+      c.handle, c.name, c.email, c.followers, c.engagement, c.niche,
+      lane(c.lane).label, STAGES[c.stage] ? STAGES[c.stage].label : c.stage,
+      c.nextStep ? c.nextStep.label : "", c.nextStep ? c.nextStep.due : "",
+      c.why, c.notes, posts.length,
+      posts.reduce((n,p)=>n+(p.views||0),0),
+      posts.reduce((n,p)=>n+(p.signups||0),0),
+      posts.reduce((n,p)=>n+(p.fee||0),0),
+      refFor(c)
+    ].map(q).join(","));
+  });
+  download(lines.join("\n"), "reedr-creators-"+today()+".csv", "text/csv");
+};
+$("#btnBackup").onclick = () => download(JSON.stringify(state,null,2), "reedr-creator-desk-"+today()+".json", "application/json");
+$("#btnRestore").onclick = () => $("#fileRestore").click();
+$("#fileRestore").onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if(!d || !Array.isArray(d.creators)) throw new Error("not a desk backup");
+      if(!confirm("Replace everything on the desk with this backup? "+d.creators.length+" creators.")) return;
+      snapshot(); state = d; save(); renderAll(); toast("Restored", "Undo", undo);
+    } catch(err){ toast("That file is not a desk backup"); }
+  };
+  r.readAsText(f);
+  e.target.value = "";
+};
+function download(text, filename, type){
+  const url = URL.createObjectURL(new Blob([text], { type }));
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 1500);
+}
+
+function fillFilters(){
+  const l = $("#fLane"), s = $("#fStage");
+  if(l.options.length === 1) CFG.lanes.forEach(x => l.add(new Option(x.label, x.id)));
+  if(s.options.length === 1) Object.keys(STAGES).forEach(k => s.add(new Option(STAGES[k].label, k)));
+}
+function renderAll(){
+  renderCounts();
+  if(view === "today")    renderToday();
+  if(view === "creators") renderCreators();
+  if(view === "results")  renderResults();
+}
+
+loadStore();
+fillFilters();
+renderAll();
+</script>
+</body>
+</html>

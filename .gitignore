@@ -1,0 +1,9 @@
+# The test harness stays local. It is hardwired to absolute paths on this
+# machine, and its fixtures carry twenty real creators' contact details.
+# This repo is public because GitHub Pages requires it. Do not commit it.
+desk-test.mjs
+
+# Session handoffs and working notes. Internal.
+docs/
+
+.DS_Store
