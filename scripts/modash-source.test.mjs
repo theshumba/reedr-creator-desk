@@ -26,6 +26,11 @@ test('Jev receives source text without contact email addresses',()=>{
   assert.ok(!JSON.stringify(request).includes('sample@mail.test'));
   assert.equal(request.questions.book_0.type,'noul');
 });
+test('caption truncation preserves valid Unicode at emoji boundaries',()=>{
+  const request=jevRequest({bio:'a'.repeat(1199)+'😀',posts:[{title:'',text:'a'.repeat(748)+'😀'+'b'.repeat(100)}]});
+  assert.ok(request.state.bio.isWellFormed());
+  assert.ok(request.state.posts[0].text.isWellFormed());
+});
 test('high content score with no dated evidence stays in review',()=>{
   const row={platform:'youtube',bio:'Books',emails:[{email:'sample@mail.test'}],judgment:{answers:{reading:{score:4,confidence:1},product:{score:4,confidence:1},niche:{choice:'clubs'},community:{noul:1}}}};
   const result=evaluate(row);
@@ -48,4 +53,12 @@ test('explicit cross-platform contacts establish identity but a shared agency em
   const target={key:'instagram:2',platform:'instagram',handle:'reader',url:'https://www.instagram.com/reader/'};
   assert.equal(linkedIdentity(target,[{key:'youtube:1',contacts:[{type:'instagram',value:'https://www.instagram.com/reader/'}]}]),'youtube:1');
   assert.equal(linkedIdentity(target,[{key:'youtube:1',contacts:[{type:'email',value:'agency@mail.test'}]}]),null);
+});
+test('hidden likes can use visible comments and mixed formats are not pooled',()=>{
+  const answers={reading:{score:4,confidence:1},product:{score:4,confidence:1},niche:{choice:'clubs'},community:{noul:1}};
+  const posts=Array.from({length:10},(_,i)=>{answers[`book_${i}`]={noul:.99};return {text:'Reading club',created:'2026-09-20T12:00:00.000Z',views:null,likes:null,comments:10,format:i<6?'photo':'video'};});
+  const result=evaluate({platform:'instagram',posts,emails:[{email:'sample@mail.test'}],judgment:{answers}},Date.parse('2026-09-22'));
+  assert.equal(result.status,'qualified');
+  assert.equal(result.responseMetric,'comments');
+  assert.equal(result.responseFormat,'photo');
 });
