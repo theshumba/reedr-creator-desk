@@ -37,3 +37,11 @@ Signups per creator are typed in by hand until Reedr captures `?ref=` at signup.
 The `DESK_CONFIG` block at the top of `index.html` holds the sender details, the offer line, the chase and check-back intervals, the signup count that earns a repeat, and every lane with its email and brief. Nothing below that block needs editing.
 
 Tests: `desk-test.mjs`, 49 headless checks over parsing, the pipeline, export, persistence and layout. It lives on the build machine only and is not in this repo, because its fixtures are real creator contact details and this repo is public. Run it with `node desk-test.mjs`.
+
+## Private Modash sourcing
+
+`scripts/modash-source.mjs` collects and scores creator candidates locally. It reads saved Modash and TypeSafe credentials from `~/.config/melusi/api-credentials.env`, never from the public page. All responses, contact data, budgets and exports stay under the ignored `docs/modash-trial/` directory. Keep that directory ignored.
+
+Run `node scripts/modash-source.mjs status` for saved progress or `account` for live balances. The runner caps Discovery spending at 100 credits and RAW usage at 100 requests, saves responses before continuing, and retains uncertain request reservations instead of blindly retrying. `export` creates the private master CSV and the table for the Desk's existing Import screen. The `release-reserve` command makes the final allocation available while retaining the overall ceiling.
+
+Run `node --test scripts/modash-source.test.mjs` for budget, contact, scoring and identity checks. These tests use invented example data and contain no real creator contacts.
