@@ -639,6 +639,9 @@ textarea.paste:focus{outline:2px solid var(--gold);outline-offset:-1px;border-co
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.001ms !important;transition-duration:.001ms !important}
 }
+#studioChangesDialog{width:min(740px,calc(100vw - 24px));max-height:90dvh;overflow:auto;border:1px solid var(--rule);border-radius:var(--r-lg);padding:24px;background:var(--card);color:var(--ink);box-shadow:var(--shadow-3)}.studio-handoff-head,.studio-handoff-actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.studio-handoff-actions{margin-top:20px;position:sticky;bottom:-24px;padding:16px 0;background:var(--card)}#studioChangesBody article{padding:14px 0;border-bottom:1px solid var(--rule);overflow-wrap:anywhere}#studioChangesBody p{margin:8px 0;white-space:pre-wrap;color:var(--ink-2)}#studioChangesError{color:var(--bad);margin-top:16px}
+/* STUDIO_HANDOFF_MOBILE */
+@media(max-width:640px){.top-in{flex-wrap:wrap}.top-right{margin-left:0;flex-wrap:wrap;width:100%;gap:6px}.top-right .btn{white-space:nowrap}}
 </style>
 </head>
 <body>
@@ -653,6 +656,8 @@ textarea.paste:focus{outline:2px solid var(--gold);outline-offset:-1px;border-co
       <div class="top-right">
         <button class="btn btn-sm btn-ghost" id="btnBackup">Back up</button>
         <button class="btn btn-sm btn-ghost" id="btnRestore">Restore</button>
+        <button class="btn btn-sm btn-ghost" id="btnStudioChanges">Review Studio changes</button>
+        <input type="file" id="fileStudioChanges" accept="application/json,.json" hidden>
         <input type="file" id="fileRestore" accept="application/json" hidden>
       </div>
     </div>
@@ -1806,9 +1811,134 @@ function renderAll(){
   if(view === "results")  renderResults();
 }
 
+/* STUDIO_HANDOFF_START */
+// Shared pure data contract, also embedded in the existing single-file Creator Desk.
+const REEDR_STAGES = { shortlist: 'Shortlist', emailed: 'Emailed', replied: 'Replied', briefed: 'Briefed', posted: 'Posted', measured: 'Measured', renew: 'Running again', paused: 'Paused', passed: 'Passed' };
+function reedrCanonical(value) {
+  if (Array.isArray(value)) return '[' + value.map(reedrCanonical).join(',') + ']';
+  if (value && typeof value === 'object') return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + reedrCanonical(value[key])).join(',') + '}';
+  return JSON.stringify(value);
+}
+const reedrId = value => typeof value === 'string' && /^[a-zA-Z0-9._-]{1,200}$/.test(value) && !['.', '..', '__proto__', 'constructor', 'prototype'].includes(value);
+function reedrBackup(value) {
+  if (!value || typeof value !== 'object' || !Array.isArray(value.creators) || value.creators.length > 5000) throw new Error('Choose a Creator Desk JSON backup with up to 5,000 creators');
+  const ids = new Set();
+  for (const c of value.creators) { if (!c || !reedrId(c.id) || ids.has(c.id) || c._deleted || typeof c.handle !== 'string' || c.email !== undefined && typeof c.email !== 'string' || c._modAt !== undefined && !Number.isFinite(Number(c._modAt)) || c.notes !== undefined && typeof c.notes !== 'string' || c.activity !== undefined && !Array.isArray(c.activity)) throw new Error('The backup contains invalid or duplicate creator records'); ids.add(c.id); }
+  return value;
+}
+function reedrPlan(creator, input) {
+  const text = (value, max) => { if (typeof value !== 'string' || !value.trim() || value.length > max || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(value)) throw new Error('Enter a valid note or next step'); return value.trim().replace(/[\u2014\u2013]/g, ', '); };
+  if (!creator || !reedrId(creator.id) || creator._deleted) throw new Error('This creator is no longer available');
+  if (creator.activity !== undefined && !Array.isArray(creator.activity) || creator.notes !== undefined && typeof creator.notes !== 'string') throw new Error('Review this creator’s notes or activity in Creator Desk first');
+  const patch = {}, changes = [], kind = input.kind; let action;
+  if (kind === 'note') {
+    const note = text(input.text, 4000); if ((creator.notes || '').length + note.length > 48000) throw new Error('The creator’s notes are too long for another imported note');
+    patch.notes = [creator.notes, note].filter(Boolean).join('\n\n'); changes.push({ field: 'Append note', before: '', after: note }); action = `Studio note: ${note}`;
+  } else if (['next_step', 'stage'].includes(kind)) {
+    if (kind === 'stage') { if (!Object.hasOwn(REEDR_STAGES, input.stage) || input.stage === creator.stage) throw new Error('Choose a different Creator Desk stage'); patch.stage = input.stage; changes.push({ field: 'Stage', before: REEDR_STAGES[creator.stage] || creator.stage || '', after: REEDR_STAGES[input.stage] }); }
+    const closed = ['paused', 'passed'].includes(patch.stage || creator.stage);
+    if (kind === 'next_step' && closed) throw new Error('Review the creator’s paused or passed stage before setting a next step');
+    let next = null;
+    if (!closed) { const label = text(input.label, 300), due = input.due; if (typeof due !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(due) || !Number.isFinite(Date.parse(due)) || new Date(due).toISOString().slice(0, 10) !== due) throw new Error('Choose a valid due date'); next = { label, due }; }
+    patch.nextStep = next; patch.followUpDate = next?.due || null;
+    changes.push({ field: 'Next step', before: creator.nextStep || null, after: next }, { field: 'Follow-up date', before: creator.followUpDate || '', after: next?.due || '' });
+    action = kind === 'stage' ? `Studio stage review: ${REEDR_STAGES[patch.stage]}` : `Studio next step: ${next.label} (${next.due})`;
+  } else throw new Error('Choose a note, next step or stage change');
+  return { kind, patch, changes, action };
+}
+function reedrEnvelope(value) {
+  if (!value || value.format !== 'megamind.reedr-changes' || value.version !== 1 || value.ventureId !== 'reedr' || !reedrId(value.id) || !Number.isFinite(Date.parse(value.at)) || !Array.isArray(value.changes) || !value.changes.length || value.changes.length > 25) throw new Error('Choose a Studio Creator Desk changes file');
+  const ids = new Set(), records = new Set();
+  for (const c of value.changes) { if (!reedrId(c.id) || !reedrId(c.recordId) || !/^[a-f0-9]{64}$/.test(c.beforeHash || '') || !c.input || typeof c.input !== 'object' || ids.has(c.id) || records.has(c.recordId)) throw new Error('The changes file has invalid or repeated records'); ids.add(c.id); records.add(c.recordId); }
+  return value;
+}
+async function reedrReview(state, envelope, digest) {
+  reedrBackup(state); reedrEnvelope(envelope); const rows = [];
+  for (const change of envelope.changes) {
+    const creator = state.creators.find(c => c.id === change.recordId), changeDigest = await digest(reedrCanonical([envelope.id, envelope.at, change]));
+    if (!creator) throw new Error('A creator in this file is missing from the current desk');
+    const receipt = (creator.activity || []).find(a => a.studioChangeId === change.id);
+    if (receipt) { if (receipt.studioDigest !== changeDigest) throw new Error('This change identity already belongs to different content'); rows.push({ id: change.id, recordId: creator.id, name: creator.name || creator.handle, status: 'applied', digest: changeDigest, changes: [], receipt }); continue; }
+    if (await digest(reedrCanonical(creator)) !== change.beforeHash) throw new Error(`The current record for ${String(creator.name || creator.handle).slice(0, 100)} changed after this backup. Load a new backup in Studio and review the change again.`);
+    const plan = reedrPlan(creator, change.input); rows.push({ id: change.id, recordId: creator.id, name: creator.name || creator.handle, status: 'ready', digest: changeDigest, ...plan });
+  }
+  return rows;
+}
+function reedrApply(state, envelope, rows, at) {
+  // Caller must reread/review the current desk and prevent intervening storage edits before this synchronous commit.
+  const updated = structuredClone(state);
+  for (const row of rows.filter(r => r.status === 'ready')) {
+    const c = updated.creators.find(c => c.id === row.recordId); Object.assign(c, row.patch);
+    c._modAt = Math.max(Date.parse(at), Number(c._modAt || 0) + 1); c.activity ||= [];
+    c.activity.unshift({ at, text: row.action, studioChangeId: row.id, studioDigest: row.digest, studioHandoffId: envelope.id });
+  }
+  return updated;
+}
+
+let studioHandoffReview = null, studioHandoffGeneration = 0;
+async function studioHandoffDigest(text){
+  const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(bytes), b => b.toString(16).padStart(2,"0")).join("");
+}
+function studioHandoffCurrent(){
+  const raw = localStorage.getItem(KEY);
+  if(!raw) throw new Error("Save the current Creator Desk before applying a changes file");
+  const current = reedrBackup(JSON.parse(raw));
+  if(reedrCanonical(current) !== reedrCanonical(state)) throw new Error("The desk changed or has unsaved edits. Save a backup before reloading this page.");
+  return { raw, current };
+}
+function studioHandoffUnchanged(raw){
+  const live = studioHandoffCurrent();
+  if(live.raw !== raw) throw new Error("The desk changed during this review. Open the changes file again.");
+}
+function studioHandoffInstall(){
+  const dialog = $("#studioChangesDialog");
+  $("#btnStudioChanges").onclick = () => $("#fileStudioChanges").click();
+  $("#closeStudioChanges").onclick = () => { studioHandoffGeneration++; studioHandoffReview = null; dialog.close(); };
+  dialog.addEventListener("cancel", () => { studioHandoffGeneration++; studioHandoffReview = null; });
+  $("#studioChangesBackup").onclick = () => $("#btnBackup").click();
+  $("#fileStudioChanges").onchange = async event => {
+    const file = event.target.files[0]; event.target.value = ""; if(!file) return;
+    const request = ++studioHandoffGeneration; studioHandoffReview = null; hideToast();
+    $("#studioChangesBody").textContent = "Reading your changes file…"; $("#studioChangesError").textContent = ""; $("#applyStudioChanges").disabled = true; dialog.showModal();
+    try {
+      if(file.size > 1024*1024) throw new Error("Choose a Studio changes file smaller than 1 MB");
+      const envelope = reedrEnvelope(JSON.parse(await file.text())), { raw, current } = studioHandoffCurrent();
+      const rows = await reedrReview(current, envelope, studioHandoffDigest); studioHandoffUnchanged(raw);
+      if(request !== studioHandoffGeneration || !dialog.open) return;
+      const ready = rows.filter(r => r.status === "ready").length;
+      const show = v => v && typeof v === "object" ? Object.values(v).join(" · ") : String(v || "None");
+      $("#studioChangesBody").innerHTML = '<p>'+ready+(ready === 1 ? ' change ready.' : ' changes ready.')+' Applying this file changes only the reviewed fields and adds an activity entry.</p>'+rows.map(r => '<article><strong>'+esc(r.name)+'</strong>'+(r.status === "applied" ? '<p>Already applied. This file will not apply it twice.</p>' : r.changes.map(c => '<p><strong>'+esc(c.field)+'</strong><br>Before: '+esc(show(c.before))+'<br>After: '+esc(show(c.after))+'</p>').join(""))+'</article>').join("");
+      const reviewHash = await studioHandoffDigest(reedrCanonical(rows)); if(request !== studioHandoffGeneration || !dialog.open) return; studioHandoffUnchanged(raw); studioHandoffReview = { envelope, raw, request, hash: reviewHash }; $("#applyStudioChanges").disabled = !ready;
+    } catch(error){ if(request === studioHandoffGeneration){ $("#studioChangesBody").textContent = "This file has not changed your desk."; $("#studioChangesError").textContent = error instanceof SyntaxError ? "Choose a valid Studio changes JSON file" : error.message; } }
+  };
+  $("#applyStudioChanges").onclick = async () => {
+    const review = studioHandoffReview; if(!review) return; $("#applyStudioChanges").disabled = true;
+    try {
+      const { raw, current } = studioHandoffCurrent(); if(raw !== review.raw) throw new Error("The desk changed. Open the changes file again and review the latest records.");
+      const rows = await reedrReview(current, review.envelope, studioHandoffDigest);
+      if(await studioHandoffDigest(reedrCanonical(rows)) !== review.hash) throw new Error("The changes no longer match the review");
+      if(review.request !== studioHandoffGeneration || !dialog.open) return;
+      studioHandoffUnchanged(raw);
+      const updated = reedrApply(current, review.envelope, rows, new Date().toISOString()), bytes = JSON.stringify(updated);
+      // Keep this write synchronous after the final current-state check. Do not call save(), which swallows storage failures.
+      localStorage.setItem(KEY, bytes);
+      if(localStorage.getItem(KEY) !== bytes) throw new Error("The desk changed during saving. Reopen it and check the activity before trying again.");
+      state = updated; undoSnapshot = null; closePanel(); renderAll(); $("#storeStatus").textContent = "Saved on this computer";
+      studioHandoffReview = null; studioHandoffGeneration++;
+      $("#studioChangesBody").textContent = "Changes saved. Download the current backup and load it in Studio to record the result there."; $("#studioChangesError").textContent = "";
+      toast("Studio changes saved");
+    } catch(error){ $("#studioChangesError").textContent = error.message; }
+  };
+}
+document.addEventListener("DOMContentLoaded", studioHandoffInstall, { once:true });
+
+/* STUDIO_HANDOFF_END */
+
 loadStore();
 fillFilters();
 renderAll();
 </script>
+<dialog id="studioChangesDialog" aria-labelledby="studioChangesTitle"><div class="studio-handoff-head"><h2 id="studioChangesTitle">Review Studio changes</h2><button class="btn btn-sm btn-ghost" id="closeStudioChanges">Close</button></div><div id="studioChangesBody"></div><p id="studioChangesError" role="alert"></p><div class="studio-handoff-actions"><button class="btn" id="studioChangesBackup">Download current backup</button><button class="btn btn-primary" id="applyStudioChanges">Apply reviewed changes</button></div></dialog>
 </body>
 </html>
